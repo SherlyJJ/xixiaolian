@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- v0.6：找项目增加公众号单篇文章样例，合集详情平铺全文列表并跳转公众号主页 -->
+<!-- v0.7：公众号仅读取基础信息；项目介绍解析材料仅支持 DOC/DOCX 并自动挂接附件 -->
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>小联帮你链｜高保真交互原型 v0.6</title>
+    <title>小联帮你链｜高保真交互原型 v0.7</title>
     <style>
       :root {
         --blue: #4c8ffb;
@@ -674,32 +674,6 @@
         margin: 0;
         line-height: 1.75;
       }
-      .article-row {
-        display: flex;
-        gap: 11px;
-        padding: 10px 0;
-        border-top: 1px solid var(--line);
-        cursor: pointer;
-      }
-      .article-row:first-of-type {
-        border-top: 0;
-      }
-      .article-thumb {
-        width: 76px;
-        height: 58px;
-        background: linear-gradient(135deg, #a8c6eb, #5f88b8);
-        border-radius: 8px;
-        flex: 0 0 auto;
-      }
-      .article-row b {
-        font-size: 14px;
-      }
-      .article-row span {
-        display: block;
-        color: #8a95a3;
-        font-size: 11px;
-        margin-top: 5px;
-      }
       .source-box {
         display: flex;
         align-items: center;
@@ -717,13 +691,6 @@
         display: grid;
         place-items: center;
         font-weight: 750;
-      }
-      .link-state {
-        padding: 10px;
-        border-radius: 9px;
-        background: #f7f9fb;
-        color: #697588;
-        font-size: 12px;
       }
       .state-tabs {
         display: flex;
@@ -1242,74 +1209,6 @@
         border-radius: 10px;
         background: #f8fbff;
       }
-      .article-mode {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin: 10px 0;
-      }
-      .article-mode button {
-        min-height: 58px;
-        padding: 8px;
-        border: 1px solid #dce5ef;
-        border-radius: 10px;
-        background: #fff;
-        color: #69788b;
-        cursor: pointer;
-      }
-      .article-mode button.active {
-        border-color: #68a2ef;
-        background: #edf6ff;
-        color: #3779cf;
-        box-shadow: inset 0 0 0 1px #68a2ef;
-      }
-      .article-mode b,
-      .article-mode span {
-        display: block;
-      }
-      .article-mode span {
-        margin-top: 2px;
-        font-size: 10px;
-      }
-      .pick-list {
-        border: 1px solid #e3eaf1;
-        border-radius: 10px;
-        overflow: hidden;
-        background: #fff;
-      }
-      .pick-row {
-        display: grid;
-        grid-template-columns: 20px 54px 1fr;
-        gap: 9px;
-        align-items: center;
-        padding: 10px;
-        border-top: 1px solid #edf1f5;
-        cursor: pointer;
-      }
-      .pick-row:first-child {
-        border-top: 0;
-      }
-      .pick-row input {
-        width: 17px;
-        height: 17px;
-        accent-color: #4c8ffb;
-      }
-      .pick-thumb {
-        width: 54px;
-        height: 42px;
-        border-radius: 7px;
-        background: linear-gradient(135deg, #b9d3f1, #6f98c9);
-      }
-      .pick-row b {
-        display: block;
-        font-size: 12px;
-      }
-      .pick-row span {
-        display: block;
-        margin-top: 3px;
-        color: #919ba7;
-        font-size: 10px;
-      }
       .guide-callout {
         padding: 12px;
         border: 1px solid #f0d9a2;
@@ -1583,69 +1482,6 @@
           opacity: 1;
         }
       }
-      .wechat-feed {
-        border: 1px solid #e5e9ee;
-        border-radius: 11px;
-        overflow: hidden;
-        background: #fff;
-      }
-      .wechat-feed-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 12px;
-        background: #f7f8fa;
-        color: #596474;
-        font-size: 11px;
-      }
-      .wechat-article {
-        display: grid;
-        grid-template-columns: 20px 1fr 72px;
-        gap: 9px;
-        align-items: center;
-        min-height: 78px;
-        padding: 10px 11px;
-        border-top: 1px solid #edf0f3;
-        cursor: pointer;
-      }
-      .wechat-article input {
-        width: 17px;
-        height: 17px;
-        accent-color: #07c160;
-      }
-      .wechat-article b {
-        display: -webkit-box;
-        overflow: hidden;
-        color: #252b32;
-        font-size: 12px;
-        line-height: 1.45;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-      .wechat-article small {
-        display: block;
-        margin-top: 5px;
-        color: #a0a7af;
-        font-size: 9px;
-      }
-      .wechat-cover {
-        width: 72px;
-        height: 54px;
-        position: relative;
-        border-radius: 5px;
-        background: linear-gradient(135deg, #93b7de, #345f91);
-        overflow: hidden;
-      }
-      .wechat-cover:after {
-        content: "";
-        position: absolute;
-        width: 52px;
-        height: 52px;
-        right: -17px;
-        top: -18px;
-        border: 10px solid rgba(255, 255, 255, 0.18);
-        border-radius: 50%;
-      }
       .field-rule {
         margin: 7px 0 9px;
         padding: 9px 10px;
@@ -1717,7 +1553,7 @@
           我的项目 / 项目管理
         </button>
         <div class="rule">
-          v0.6交互提示：找项目增加公众号单篇文章样例；公众号合集详情平铺全部文章，详情底部进入对方公众号主页；单篇文章拥有独立详情与阅读原文入口。
+          v0.7交互提示：公众号授权后只读取账号基础信息并直接生成项目字段，不再拉取或展示文章；项目介绍的解析材料仅支持 DOC/DOCX，解析后自动挂接到相关附件。
         </div>
       </aside>
       <main class="stage">
@@ -1784,11 +1620,11 @@
       ];
       const types = [
         {
-          value: "official_account_articles",
-          variant: "collection",
-          label: "公众号文章",
-          choice: "我有公众号文章",
-          desc: "授权后导入全部或部分文章",
+          value: "official_account",
+          variant: "account",
+          label: "公众号",
+          choice: "我有公众号",
+          desc: "授权后读取账号基础信息",
           icon: I.chat,
           name: "西城区中小企业惠企政策申报与服务平台",
           intro:
@@ -1833,26 +1669,12 @@
           cta: "联系对接",
         },
       ];
-      const singleArticleProject = {
-        value: "official_account_articles",
-        displayId: "oa_single",
-        variant: "single",
-        label: "公众号单篇文章",
-        listLabel: "公众号单篇文章",
-        icon: I.doc,
-        name: "2026年度西城区科技创新专项申报工作正式启动",
-        intro:
-          "西城区2026年度科技创新专项申报工作现已启动，重点支持关键技术研发、科技成果转化、数字经济示范应用及创新载体建设。文章系统说明申报主体条件、支持方向、材料清单、网上填报流程和受理时间，并提示企业提前完成资格核验及财务资料准备。",
-        cats: ["公共项目", "研发创新"],
-        cta: "阅读原文",
-      };
       const projectSamples = [
         {
           ...types[0],
-          displayId: "oa_collection",
-          listLabel: "公众号文章合集",
+          displayId: "official_account",
+          listLabel: "公众号",
         },
-        singleArticleProject,
         {
           ...types[1],
           displayId: "mini_program_link",
@@ -1871,8 +1693,6 @@
         authorized: false,
         authStage: "idle",
         material: false,
-        articleMode: "all",
-        selectedArticles: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
         miniNoPermission: false,
         miniLink: "https://wxaurl.cn/8YxJpQ2Demo",
         miniConfirmed: false,
@@ -1911,8 +1731,6 @@
         state.authorized = false;
         state.authStage = "idle";
         state.material = false;
-        state.articleMode = "all";
-        state.selectedArticles = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         state.miniNoPermission = false;
         state.miniLink = "https://wxaurl.cn/8YxJpQ2Demo";
         state.miniConfirmed = false;
@@ -1955,7 +1773,7 @@
         return `<div class="search">⌕　搜索项目名称</div>${categoryBar(true)}${visible.length ? visible.map((t, i) => `<article class="list-card" onclick="openDetail('${t.displayId}')"><div class="list-top"><div class="list-cover" style="filter:hue-rotate(${i * 24}deg)"></div><div class="list-info"><h4>${t.name}</h4><p>${t.intro}</p><div class="chips"><span class="chip" style="background:#f3ecff;color:#7957b5">${t.listLabel}</span>${t.cats.map((c) => `<span class="chip">${c}</span>`).join("")}</div></div></div><div class="list-bottom"><span class="list-company">▦ ${t.variant ? "西城区企业服务" : i % 2 ? "西城区企业综合服务中心" : "北京深蓝智联科技有限公司"}</span><button class="btn light">查看详情</button></div></article>`).join("") : `<div class="form-card" style="text-align:center;color:#8793a2;padding:30px">暂无该分类项目，切换其他分类查看</div>`}`;
       }
       function typeSelect() {
-        return `<div class="publish-context">你现在能提供什么？<span>只需选择最符合现状的一种方式；录入并解析后，再人工确认项目信息。</span></div><div class="type-grid">${types.map((t) => `<article class="type-card ${state.selected.value === t.value ? "active" : ""}" onclick="chooseType('${t.value}')"><div class="type-icon">${t.icon}</div><b>${t.choice}</b><span>${t.desc}</span></article>`).join("")}</div><div class="hint">公众号文章必须先授权；小程序需提供公众平台生成的长期链接；网页可能解析失败；只有介绍时可组合文字、语音和文件。</div><div class="sticky-action"><button class="btn primary" onclick="resetSource();go('form')">下一步</button></div>`;
+        return `<div class="publish-context">你现在能提供什么？<span>只需选择最符合现状的一种方式；录入并解析后，再人工确认项目信息。</span></div><div class="type-grid">${types.map((t) => `<article class="type-card ${state.selected.value === t.value ? "active" : ""}" onclick="chooseType('${t.value}')"><div class="type-icon">${t.icon}</div><b>${t.choice}</b><span>${t.desc}</span></article>`).join("")}</div><div class="hint">公众号必须先授权并读取账号基础信息；小程序需提供公众平台生成的长期链接；网页可能解析失败；只有介绍时可组合文字、语音和 DOC/DOCX 文件。</div><div class="sticky-action"><button class="btn primary" onclick="resetSource();go('form')">下一步</button></div>`;
       }
       function chooseType(v) {
         state.selected = types.find((t) => t.value === v);
@@ -1978,33 +1796,12 @@
       }
       function authBlock(admin = false) {
         if (state.authorized)
-          return `<div class="auth-account"><span class="source-logo">西企</span><div><b>西城区企业服务</b><div class="small">✓ 授权成功　已读取公众号资料及全部12篇已发表文章</div></div></div>`;
+          return `<div class="auth-account"><span class="source-logo">西企</span><div><b>西城区企业服务</b><div class="small">✓ 授权成功　已读取公众号基础信息并完成智能拆解</div></div></div><div class="guide-panel"><h4>已读取的公众号基础信息</h4><div class="guide-step"><i>名</i><span>公众号名称：<b>西城区企业服务</b></span></div><div class="guide-step"><i>号</i><span>微信号：<b>xicheng_qifu</b></span></div><div class="guide-step"><i>类</i><span>账号类型：<b>服务号｜已认证</b></span></div><div class="guide-step"><i>介</i><span>功能介绍：面向西城区企业提供惠企政策、申报辅导和资源对接服务。</span></div><div class="scheme-note">本期不读取公众号文章。系统仅根据以上账号资料生成下方项目名称、简介和分类，发布人仍需确认或修改。</div></div>`;
         if (state.authStage === "idle")
-          return `<div class="smart-box"><div class="smart-icon">${I.chat}</div><strong>先完成公众号授权</strong><p>授权是读取公众号资料和已发表文章列表的必要操作，需要公众号管理员确认。</p><button class="btn primary" onclick="startAuthorization()">${admin ? "生成授权二维码" : "发起授权"}</button></div><div class="hint">无论导入全部还是部分文章，都必须先授权；本期不支持直接粘贴单篇文章链接绕过授权。</div>`;
+          return `<div class="smart-box"><div class="smart-icon">${I.chat}</div><strong>先完成公众号授权</strong><p>授权是读取公众号名称、微信号、账号类型、认证状态和功能介绍等基础信息的必要操作，需要公众号管理员确认。</p><button class="btn primary" onclick="startAuthorization()">${admin ? "生成授权二维码" : "发起授权"}</button></div><div class="hint">本期不读取公众号文章，也不展示文章选择；授权成功后直接拆解项目字段。</div>`;
         const scanning = state.authStage === "scanning";
         const success = state.authStage === "success";
-        return `<div class="wechat-auth-page"><div class="wechat-brand"><span class="wechat-logo">微</span>微信公众平台授权</div><h4>${success ? "授权成功" : scanning ? "正在确认管理员身份" : "请公众号管理员扫码"}</h4><p>${success ? "即将返回并加载文章列表" : "使用绑定该公众号的管理员微信扫码确认"}</p><div class="qr-wrap ${scanning ? "scanning" : ""}" onclick="scanAuthorization()">${success ? `<div class="qr-state"><div><span class="auth-check">✓</span><div style="margin-top:10px;color:#07a650">已授权</div></div></div>` : `<div class="qr-code">${qrMarkup()}</div>${scanning ? `<span class="qr-scan-line"></span><div class="qr-state">正在读取授权结果…</div>` : ""}`}</div><div class="small">${state.authStage === "qr" ? "原型演示：点击二维码模拟管理员扫码" : scanning ? "扫码成功，正在建立公众号授权关系" : "公众号资料与文章权限已确认"}</div></div>`;
-      }
-      const articleSamples = [
-        {
-          title: "2026年度西城区科技创新专项申报工作正式启动",
-          date: "07月18日",
-        },
-        { title: "专精特新中小企业认定条件与材料准备指引", date: "07月15日" },
-        { title: "企业数字化转型支持政策及申报流程解读", date: "07月12日" },
-        { title: "中小企业融资担保服务对接活动报名通知", date: "07月09日" },
-        { title: "稳岗扩岗补贴申领常见问题集中答疑", date: "07月06日" },
-        { title: "高新技术企业认定财务资料规范说明", date: "07月02日" },
-        { title: "西城区企业服务月度事项办理清单", date: "06月27日" },
-        { title: "知识产权质押融资政策与办理案例分享", date: "06月23日" },
-        { title: "企业人才引进与住房支持政策汇编", date: "06月18日" },
-        { title: "绿色低碳技术改造项目征集通知", date: "06月13日" },
-        { title: "科技型中小企业评价入库操作指南", date: "06月09日" },
-        { title: "惠企政策精准匹配服务使用说明", date: "06月04日" },
-      ];
-      function articlePicker() {
-        const all = state.articleMode === "all";
-        return `<div class="form-title">选择导入范围</div><div class="article-mode"><button class="${all ? "active" : ""}" onclick="setArticleMode('all')"><b>导入全部文章</b><span>当前12篇，后续新增自动同步</span></button><button class="${!all ? "active" : ""}" onclick="setArticleMode('selected')"><b>选择部分文章</b><span>支持单篇或多篇，不自动新增</span></button></div><div class="wechat-feed"><div class="wechat-feed-head"><b>西城区企业服务</b><span>已加载全部12篇</span></div>${articleSamples.map((a, i) => `<label class="wechat-article"><input type="checkbox" ${all || state.selectedArticles.includes(i) ? "checked" : ""} ${all ? "disabled" : ""} onchange="toggleArticle(${i})"><span><b>${a.title}</b><small>${a.date}　西城区企业服务</small></span><span class="wechat-cover" style="filter:hue-rotate(${i * 17}deg)"></span></label>`).join("")}</div><div class="field-help">列表按公众号已发表文章的标题、发布日期和封面展示，不在选择阶段展开正文摘要。</div>${all ? `<div class="success-box" style="margin-top:10px">将导入以上12篇历史文章，并在公众号后续发表文章时自动增量同步。</div>` : ""}<button class="btn light" style="width:100%;margin-top:10px" onclick="parseArticles()">导入并智能生成项目信息</button>`;
+        return `<div class="wechat-auth-page"><div class="wechat-brand"><span class="wechat-logo">微</span>微信公众平台授权</div><h4>${success ? "授权成功" : scanning ? "正在确认管理员身份" : "请公众号管理员扫码"}</h4><p>${success ? "即将返回并读取公众号基础信息" : "使用绑定该公众号的管理员微信扫码确认"}</p><div class="qr-wrap ${scanning ? "scanning" : ""}" onclick="scanAuthorization()">${success ? `<div class="qr-state"><div><span class="auth-check">✓</span><div style="margin-top:10px;color:#07a650">已授权</div></div></div>` : `<div class="qr-code">${qrMarkup()}</div>${scanning ? `<span class="qr-scan-line"></span><div class="qr-state">正在读取授权结果…</div>` : ""}`}</div><div class="small">${state.authStage === "qr" ? "原型演示：点击二维码模拟管理员扫码" : scanning ? "扫码成功，正在建立公众号授权关系" : "公众号基础信息权限已确认"}</div></div>`;
       }
       function miniProgramSource() {
         const validation =
@@ -2025,11 +1822,10 @@
         return `<div class="field"><label><span class="required">*</span> HTTPS网页链接</label><input class="input" value="${state.webUrl}" oninput="state.webUrl=this.value"><div class="field-help">系统将尝试读取网页标题、description 和 Open Graph 图片，读取结果取决于对方网站权限。</div></div><div class="web-branch"><button class="btn primary" onclick="parseWeb('success')">模拟解析成功</button><button class="btn" onclick="parseWeb('blocked')">模拟反爬失败</button></div>${result}<div class="hint">解析失败不阻断发布：进入人工确认区补齐必填字段；详情页按钮根据技术条件采用“立即体验”或“复制网址”。</div>`;
       }
       function basicSource() {
-        return `<div class="source-summary"><span>${I.spark}</span><span><b>三种内容可以组合提供</b><br>输入或粘贴文字、上传图片/PDF/Word、语音转文字后，系统统一解析。</span></div><div class="composer"><textarea id="basicTextarea" placeholder="点此输入或粘贴项目介绍……" onfocus="seedBasicText()" oninput="updateBasicText(this.value)">${state.basicText}</textarea>${state.material ? `<div class="composer-files"><span class="composer-file">▣ 企业数字化服务方案.pdf　1.5MB <button onclick="removeMaterial()">×</button></span></div><div class="material-insight">文件预识别：企业数字化诊断、转型路线设计、系统实施与持续运营服务。</div>` : ""}${state.voiceRecording ? `<div class="recording"><span class="wave"><i></i><i></i><i></i><i></i></span>正在听，请描述项目；再次点击“结束录音”完成转文字</div>` : ""}<div class="composer-toolbar"><button class="tool-btn" onclick="addMaterial()">＋ 上传文件</button><button class="tool-btn voice ${state.voiceRecording ? "active" : ""}" onclick="voiceInput()">${state.voiceRecording ? "■ 结束录音" : "◉ 语音输入"}</button><span class="composer-count">图片 / PDF / Word</span></div></div><div class="composer-tip">初始为空；点击输入框、上传文件或完成语音输入会出现预设示例，便于演示完整链路。</div><button class="btn light" style="width:100%;margin-top:12px" onclick="parseBasic()">综合解析以上内容</button>`;
+        return `<div class="source-summary"><span>${I.spark}</span><span><b>三种内容可以组合提供</b><br>输入或粘贴文字、上传 DOC/DOCX 项目材料、语音转文字后，系统统一解析。</span></div><div class="composer"><textarea id="basicTextarea" placeholder="点此输入或粘贴项目介绍……" onfocus="seedBasicText()" oninput="updateBasicText(this.value)">${state.basicText}</textarea>${state.material ? `<div class="composer-files"><span class="composer-file">▣ 中小企业数字化转型服务方案.docx　1.5MB <button onclick="removeMaterial()">×</button></span></div><div class="material-insight">文件预识别：企业数字化诊断、转型路线设计、系统实施与持续运营服务。解析完成后，该 DOCX 将自动挂接到“相关附件”。</div>` : ""}${state.voiceRecording ? `<div class="recording"><span class="wave"><i></i><i></i><i></i><i></i></span>正在听，请描述项目；再次点击“结束录音”完成转文字</div>` : ""}<div class="composer-toolbar"><button class="tool-btn" onclick="addMaterial()">＋ 上传项目材料</button><button class="tool-btn voice ${state.voiceRecording ? "active" : ""}" onclick="voiceInput()">${state.voiceRecording ? "■ 结束录音" : "◉ 语音输入"}</button><span class="composer-count">仅支持 .doc / .docx</span></div></div><div class="composer-tip">初始为空；点击输入框、上传项目材料或完成语音输入会出现预设示例。PDF 等其他文件不能用于本步骤解析，可在解析结果的“相关附件”中另行添加。</div><button class="btn light" style="width:100%;margin-top:12px" onclick="parseBasic()">综合解析以上内容</button>`;
       }
       function sourceForm(t, admin = false) {
-        if (t.value === "official_account_articles")
-          return `${authBlock(admin)}${state.authorized ? articlePicker() : ""}`;
+        if (t.value === "official_account") return authBlock(admin);
         if (t.value === "mini_program_link") return miniProgramSource();
         if (t.value === "external_web") return webSource();
         return basicSource();
@@ -2044,35 +1840,34 @@
           ? `<div class="field"><label><span class="required">*</span> 所属企业</label><select class="input"><option>请选择会员企业</option><option selected>北京深蓝智联科技有限公司</option><option>西城区企业综合服务中心</option></select><div class="field-help">后台创建时由工作人员指定所属企业。</div></div>`
           : `<div class="field locked-field"><label><span class="required">*</span> 所属企业</label><input class="input" value="北京深蓝智联科技有限公司" disabled/><span class="locked-badge">系统读取</span><div class="field-help">根据当前账号归属企业自动填入，不支持修改。</div></div>`;
         const sourceSpecific =
-          t.value === "official_account_articles"
-            ? `<div class="field"><label>公众号来源</label><div class="success-box">✓ 西城区企业服务已授权；${state.articleMode === "all" ? "全部12篇及后续新增文章" : `已选${state.selectedArticles.length}篇文章`}。</div></div>`
+          t.value === "official_account"
+            ? `<div class="field"><label>公众号来源</label><div class="success-box">✓ 西城区企业服务已授权；已读取名称、微信号、账号类型、认证状态和功能介绍。</div></div>`
             : t.value === "mini_program_link"
               ? `<div class="field"><label><span class="required">*</span> 小程序长期链接</label><input class="input" value="${state.miniLink}"><div class="field-help">已完成格式与打开测试；有效期由提供者确认。AppID和页面路径需由技术侧按跳转方案保存。</div></div>`
               : t.value === "external_web"
                 ? `<div class="field"><label><span class="required">*</span> H5链接</label><input class="input" value="${state.webUrl}"><div class="field-help">${state.webResult === "blocked" ? "网页读取失败，以下字段由人工补充。" : "网页读取成功，可手动修改解析结果。"}</div></div>`
                 : `<div class="field"><label><span class="required">*</span> 联系人</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input class="input" value="张建国" placeholder="联系人姓名"><input class="input" value="13810243876" placeholder="联系人电话"></div></div>`;
         const imageRule =
-          t.value === "official_account_articles"
-            ? "已从本次导入文章中取得封面候选图，但系统不会自动决定哪张代表整个项目。请从候选图中选择一张，或自主上传。"
+          t.value === "official_account"
+            ? "公众号基础资料不作为项目宣传图片，当前请用户自主上传。"
             : t.value === "external_web" && state.webResult === "success"
               ? "已读取网页的 Open Graph 图片作为候选图；需由用户确认采用，或自主上传其他宣传图片。"
-              : t.value === "basic_info" && state.material
-                ? "已从上传材料中识别到首页图片作为候选图；需由用户确认采用。纯文字和语音不会生成宣传图片。"
-                : "当前来源没有可确认的宣传图片，请用户自主上传。";
+              : "当前来源没有可确认的宣传图片，请用户自主上传。";
         const candidates =
-          t.value === "official_account_articles"
-            ? `<div class="image-candidates"><button class="image-candidate" onclick="selectPromoImage('article-cover-1')"><span>科技专项</span></button><button class="image-candidate" onclick="selectPromoImage('article-cover-2')"><span>专精特新</span></button><button class="image-candidate" onclick="selectPromoImage('article-cover-3')"><span>数字化转型</span></button></div>`
-            : t.value === "external_web" && state.webResult === "success"
+          t.value === "external_web" && state.webResult === "success"
               ? `<div class="image-candidates" style="grid-template-columns:1fr 1fr 1fr"><button class="image-candidate" onclick="selectPromoImage('web-og')"><span>网页OG图</span></button></div>`
-              : t.value === "basic_info" && state.material
-                ? `<div class="image-candidates" style="grid-template-columns:1fr 1fr 1fr"><button class="image-candidate" onclick="selectPromoImage('document-cover')"><span>材料首页图</span></button></div>`
-                : "";
+              : "";
         const promoField = state.promoImage
           ? `<div class="source-box"><span class="selected-image"></span><div><b>${state.promoImage === "upload" ? "企业服务项目宣传图.jpg" : "已选择来源候选图"}</b><div class="small">1600×900　可重新选择或上传</div></div><button class="text-link" style="margin-left:auto" onclick="clearPromoImage()">移除</button></div>`
           : `${candidates}<button class="btn light" onclick="selectPromoImage('upload')">＋ 上传宣传图片</button>`;
-        const attachmentField = state.attachmentAdded
-          ? `<div class="source-box"><span class="source-logo">PDF</span><div><b>项目服务实施方案.pdf</b><div class="small">2.3MB　由用户自主上传</div></div><button class="text-link" style="margin-left:auto" onclick="removeResultAttachment()">删除</button></div>`
-          : `<button class="btn light" onclick="addResultAttachment()">＋ 上传相关附件</button><div class="field-help">附件不从公众号、网页或小程序自动产生，默认留空。</div>`;
+        const parsedMaterialAttachment =
+          t.value === "basic_info" && state.material
+            ? `<div class="source-box" style="margin-bottom:8px"><span class="source-logo">DOCX</span><div><b>中小企业数字化转型服务方案.docx</b><div class="small">1.5MB　由解析材料自动挂接</div></div><span class="locked-badge" style="margin-left:auto">自动挂接</span></div>`
+            : "";
+        const extraAttachment = state.attachmentAdded
+          ? `<div class="source-box" style="margin-bottom:8px"><span class="source-logo">PDF</span><div><b>项目服务实施方案.pdf</b><div class="small">2.3MB　由用户另行添加</div></div><button class="text-link" style="margin-left:auto" onclick="removeResultAttachment()">删除</button></div>`
+          : "";
+        const attachmentField = `${parsedMaterialAttachment}${extraAttachment}<button class="btn light" onclick="addResultAttachment()">＋ 添加其他附件</button><div class="field-help">用于智能解析的 DOC/DOCX 会在解析后自动挂接；此处还可继续添加 PDF 等其他项目附件。公众号、网页和小程序来源默认不产生附件。</div>`;
         return `${enterprise}${sourceSpecific}<div class="field"><label><span class="required">*</span> 项目名称</label><input class="input" value="${nameValue}" placeholder="${emptyResult ? "未解析到，请输入正式项目名称" : "请输入正式项目名称"}"/></div><div class="field"><label><span class="required">*</span> 项目简介</label><textarea class="input textarea" style="height:132px" placeholder="${emptyResult ? "未解析到，请补充约150字的项目简介" : "请输入约150字的项目简介"}">${introValue}</textarea><div class="field-help">由来源内容生成；小程序或解析失败时为空，由发布人补录，保存前均可修改。</div></div><div class="field"><label><span class="required">*</span> 分类标签（AI推荐1—3项，可调整）</label><div class="chips">${state.selectedTags.map((c) => `<span class="chip">${c}</span>`).join("")}</div><div class="tag-picker">${categories.map((c) => `<button class="tag-option ${state.selectedTags.includes(c) ? "active" : ""}" onclick="toggleTag('${c}')">${c}</button>`).join("")}</div><div class="field-help">只能从统一20项分类字典中选择，最多3项。</div></div><div class="field"><label><span class="required">*</span> 宣传图片</label><div class="field-rule">${imageRule}</div>${promoField}</div><div class="field"><label>相关附件</label>${attachmentField}</div>`;
       }
       function form() {
@@ -2096,7 +1891,9 @@
           setTimeout(() => {
             state.authorized = true;
             state.authStage = "done";
-            toast("授权成功，已读取公众号资料和全部12篇文章");
+            state.parsed = true;
+            state.selectedTags = [...state.selected.cats];
+            toast("授权成功，已读取公众号基础信息并生成项目字段");
             render();
           }, 900);
         }, 850);
@@ -2104,28 +1901,9 @@
       function authorize() {
         state.authorized = true;
         state.authStage = "done";
+        state.parsed = true;
+        state.selectedTags = [...state.selected.cats];
         render();
-      }
-      function setArticleMode(mode) {
-        state.articleMode = mode;
-        if (mode === "all")
-          state.selectedArticles = articleSamples.map((_, i) => i);
-        render();
-      }
-      function toggleArticle(index) {
-        const i = state.selectedArticles.indexOf(index);
-        if (i >= 0) state.selectedArticles.splice(i, 1);
-        else state.selectedArticles.push(index);
-        render();
-      }
-      function parseArticles() {
-        if (state.articleMode === "selected" && !state.selectedArticles.length)
-          return toast("请至少选择一篇文章");
-        finishParse(
-          state.articleMode === "all"
-            ? "12篇历史文章已导入，后续将自动同步"
-            : `已导入${state.selectedArticles.length}篇文章`,
-        );
       }
       function toggleMiniPermission() {
         state.miniNoPermission = !state.miniNoPermission;
@@ -2218,7 +1996,7 @@
       }
       function addMaterial() {
         state.material = true;
-        toast("已上传示例文件，并识别出项目内容");
+        toast("已上传 DOCX 项目材料，解析后将自动挂接到相关附件");
         render();
       }
       function removeMaterial() {
@@ -2252,7 +2030,11 @@
       function parseBasic() {
         if (!state.basicText.trim() && !state.material)
           return toast("请先输入文字、完成语音或上传文件");
-        finishParse("文字、语音和文件内容已综合解析");
+        finishParse(
+          state.material
+            ? "综合解析完成，DOCX 已自动挂接到相关附件"
+            : "文字与语音内容已综合解析",
+        );
       }
       function finishParse(msg) {
         state.parsed = true;
@@ -2269,30 +2051,18 @@
       }
       function detail(t) {
         let special = "";
-        if (
-          t.value === "official_account_articles" &&
-          t.variant === "collection"
-        )
-          special = `<div class="detail-block"><h3>公众号文章列表</h3><div class="source-box" style="margin-bottom:8px"><span class="source-logo">西企</span><div><b>西城区企业服务</b><div class="small">已认证公众号　共12篇</div></div></div>${articleSamples
-            .map(
-              (a, i) =>
-                `<div class="article-row" onclick="toast('打开公众号文章：${a.title}')"><div class="article-thumb" style="filter:hue-rotate(${i * 17}deg)"></div><div><b>${a.title}</b><span>2026年${a.date}　点击阅读文章</span></div></div>`,
-            )
-            .join(
-              "",
-            )}<div class="link-state">已展示全部12篇文章　最近同步：今天 09:20</div></div>`;
-        if (t.value === "official_account_articles" && t.variant === "single")
-          special = `<div class="detail-block"><h3>文章信息</h3><div class="source-box"><span class="source-logo">西企</span><div><b>西城区企业服务</b><div class="small">2026年07月18日发布</div></div></div></div><div class="detail-block"><h3>文章内容</h3><div class="article-thumb" style="width:100%;height:146px;margin-bottom:12px"></div><p>本次专项围绕关键技术研发、科技成果转化、数字经济示范应用和创新载体建设设置支持方向。符合条件的企业需在规定时间内完成线上填报，并同步提交主体资质、项目方案、财务证明及相关佐证材料。</p></div>`;
+        if (t.value === "official_account")
+          special = `<div class="detail-block"><h3>公众号信息</h3><div class="source-box"><span class="source-logo">西企</span><div><b>西城区企业服务</b><div class="small">服务号｜已认证｜微信号 xicheng_qifu</div></div></div><div class="hint">具体服务与最新内容请点击下方按钮进入公众号主页查看。</div></div>`;
         if (t.value === "mini_program_link")
           special = `<div class="detail-block"><h3>小程序体验入口</h3><div class="source-box"><span class="source-logo">小</span><div><b>中小企业数字化财税协同服务平台</b><div class="small">长期链接已确认，入口已通过打开测试</div></div></div></div>`;
         if (t.value === "external_web")
           special = `<div class="detail-block"><h3>项目网站</h3><div class="source-box"><span class="source-logo">W</span><div><b>www.xichengqifu.cn</b><div class="small">当前域名未配置为业务域名</div></div></div><div class="hint">点击后复制网址，请前往浏览器打开。</div></div>`;
         if (t.value === "basic_info")
           special = `<div class="detail-block"><h3>项目相关附件</h3><div class="source-box"><span class="source-logo">PDF</span><div><b>项目服务实施方案.pdf</b><div class="small">2.3MB　点击下载</div></div></div></div>`;
-        const publisher = t.variant
+        const publisher = t.value === "official_account"
           ? "西城区企业服务"
           : "北京深蓝智联科技有限公司";
-        const contact = t.variant
+        const contact = t.value === "official_account"
           ? "微信公众号｜已认证"
           : "张建国｜138****3876";
         const ctaId = t.displayId || t.value;
@@ -2395,22 +2165,16 @@
           admin: "公司内部PC后台",
         }[state.role];
         let typeNote = {
-          official_account_articles:
-            "公众号与单篇文章合并：点击发起授权后展示微信授权二维码；点击二维码依次演示扫码中、授权成功和加载全部文章。随后可导入全部或选择部分／单篇文章。",
+          official_account:
+            "点击发起授权后展示微信授权二维码；点击二维码依次演示扫码中与授权成功。授权后仅读取公众号名称、微信号、账号类型、认证状态和功能介绍等基础信息，并直接生成可修改的项目字段，不读取文章。",
           mini_program_link:
             "小程序主页与指定页面合并：均要求目标管理员从微信公众平台生成长期 URL Link。客户端转发链接和纯页面路径均提示错误。",
           external_web:
             "网页存在解析成功与反爬失败两种结果；失败不阻断流程，转为人工补录。",
           basic_info:
-            "项目介绍初始为空；点击输入、上传示例文件或完成语音输入后产生预设内容，再统一解析。",
+            "项目介绍初始为空；可输入文字、完成语音输入或上传 DOC/DOCX 项目材料后统一解析。解析使用的 DOC/DOCX 会自动挂接到相关附件，附件区仍可另行添加 PDF 等文件。",
         }[t.value];
-        if (t.variant === "collection")
-          typeNote =
-            "公众号文章合集：项目详情平铺展示已导入的全部文章，文章可逐篇打开；详情底部主按钮进入对方公众号主页。";
-        if (t.variant === "single")
-          typeNote =
-            "公众号单篇文章：找项目中作为独立项目展示，详情聚焦该篇文章的来源、发布时间和内容摘要，底部主按钮阅读原文。";
-        return `<div class="review-card"><h3>当前原型状态</h3><div class="review-row"><b>角色</b><span>${roleName}</span></div><div class="review-row"><b>页面</b><span>${state.page}</span></div><div class="review-row"><b>录入方式</b><span>${t.label}</span></div><div class="review-row"><b>字典值</b><span class="value">${t.value}</span></div></div><div class="review-card"><h3>本方式方案说明</h3><p>${typeNote}</p><p>预设按钮和示例数据仅用于演示交互，不代表正式数据。</p></div><div class="review-card"><h3>结果字段来源规则</h3><ul><li>公众号文章封面、网页OG图或材料首页图只作为宣传图片候选，需用户明确选择</li><li>小程序、纯文字和语音不自动产生宣传图片</li><li>相关附件不从任何来源自动生成，默认留空，由用户自主上传</li><li>项目名称与简介解析后均可修改；演示简介按约150字撰写</li></ul></div><div class="review-card"><h3>统一发布链路</h3><ul><li>先授权或提供来源内容</li><li>系统解析并从20项分类中推荐1—3项</li><li>用户确认、修改全部必要字段</li><li>会员所属企业自动读取且不可改</li><li>保存后统一为未上架</li></ul></div><div class="review-card"><h3>小程序跳转技术说明</h3><p>URL Link用于来源录入与测试。详情页“立即体验”最终还需技术确认如何取得并保存目标AppID与页面路径，以满足小程序内跳转。</p></div>`;
+        return `<div class="review-card"><h3>当前原型状态</h3><div class="review-row"><b>角色</b><span>${roleName}</span></div><div class="review-row"><b>页面</b><span>${state.page}</span></div><div class="review-row"><b>录入方式</b><span>${t.label}</span></div><div class="review-row"><b>字典值</b><span class="value">${t.value}</span></div></div><div class="review-card"><h3>本方式方案说明</h3><p>${typeNote}</p><p>预设按钮和示例数据仅用于演示交互，不代表正式数据。</p></div><div class="review-card"><h3>结果字段来源规则</h3><ul><li>公众号只读取账号基础信息，不读取或展示文章；宣传图片由用户自主上传</li><li>网页 OG 图只作为宣传图片候选；小程序、纯文字、语音和 DOC/DOCX 不自动产生宣传图片</li><li>项目介绍解析使用的 DOC/DOCX 自动挂接到相关附件；相关附件还可另行添加 PDF 等文件</li><li>其他来源默认不产生附件，由用户自主添加</li><li>项目名称与简介解析后均可修改；演示简介按约150字撰写</li></ul></div><div class="review-card"><h3>统一发布链路</h3><ul><li>先授权或提供来源内容</li><li>系统解析并从20项分类中推荐1—3项</li><li>用户确认、修改全部必要字段</li><li>会员所属企业自动读取且不可改</li><li>保存后统一为未上架</li></ul></div><div class="review-card"><h3>小程序跳转技术说明</h3><p>URL Link用于来源录入与测试。详情页“立即体验”最终还需技术确认如何取得并保存目标AppID与页面路径，以满足小程序内跳转。</p></div>`;
       }
       function render() {
         const isAdmin = state.role === "admin";
@@ -2473,9 +2237,7 @@
       function doCta(v) {
         const t = types.find((x) => x.value === v);
         const msgs = {
-          official_account_articles: "正在进入公众号主页：西城区企业服务",
-          oa_collection: "正在进入公众号主页：西城区企业服务",
-          oa_single: "正在打开公众号文章原文",
+          official_account: "正在进入公众号主页：西城区企业服务",
           mini_program_link: "微信将确认是否打开目标小程序页面",
           external_web: "网址已复制，请前往浏览器打开",
           basic_info: "即将拨打：138****3876",
@@ -2483,9 +2245,9 @@
         toast(msgs[v] || t?.cta || "打开项目");
       }
       document.querySelector(".controls .sub").textContent =
-        "高保真交互原型 v0.6";
+        "高保真交互原型 v0.7";
       document.querySelector(".controls .rule").textContent =
-        "v0.6交互提示：找项目同时展示公众号文章合集与单篇文章；合集详情平铺全部文章并进入公众号主页，单篇详情直接阅读原文。";
+        "v0.7交互提示：公众号授权后只读取账号基础信息并直接生成项目字段，不再拉取或展示文章；项目介绍的解析材料仅支持 DOC/DOCX，解析后自动挂接到相关附件。";
       document.querySelectorAll(".role").forEach(
         (b) =>
           (b.onclick = () => {
