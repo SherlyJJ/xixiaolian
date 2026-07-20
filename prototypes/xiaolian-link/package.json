@@ -1,0 +1,11 @@
+{
+  "name": "xixiaolian-xiaolian-link-prototype",
+  "version": "0.6.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node tests/smoke.mjs",
+    "test": "node tests/smoke.mjs",
+    "serve": "python3 -m http.server 4173"
+  }
+}
