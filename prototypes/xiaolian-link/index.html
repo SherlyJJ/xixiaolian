@@ -1,0 +1,2278 @@
+<!doctype html>
+<!-- v0.7：公众号仅读取基础信息；项目介绍解析材料仅支持 DOC/DOCX 并自动挂接附件 -->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>小联帮你链｜高保真交互原型 v0.7</title>
+    <style>
+      :root {
+        --blue: #4c8ffb;
+        --blue2: #65aaf2;
+        --blue-soft: #eaf3ff;
+        --page: #eaf1f8;
+        --top: #cfe2ff;
+        --ink: #1d2838;
+        --muted: #748195;
+        --line: #e4eaf1;
+        --white: #fff;
+        --danger: #e86666;
+        --shadow: 0 8px 28px rgba(50, 87, 128, 0.12);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #edf1f5;
+        color: var(--ink);
+        font:
+          14px/1.5 -apple-system,
+          BlinkMacSystemFont,
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
+      }
+      .workspace {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+      }
+      .controls {
+        background: #fff;
+        border-right: 1px solid #dfe4e9;
+        padding: 24px 20px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: auto;
+      }
+      .controls h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+      .controls .sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 4px 0 22px;
+      }
+      .controls h3 {
+        font-size: 11px;
+        color: #8a94a2;
+        margin: 20px 0 8px;
+        letter-spacing: 0.08em;
+      }
+      .control-btn {
+        width: 100%;
+        height: 40px;
+        border: 1px solid #d8e0e9;
+        background: #fff;
+        border-radius: 9px;
+        margin: 4px 0;
+        text-align: left;
+        padding: 0 12px;
+        cursor: pointer;
+      }
+      .control-btn.active {
+        background: #edf5ff;
+        border-color: #86b7ff;
+        color: #256fd9;
+        font-weight: 650;
+      }
+      .controls .rule {
+        font-size: 11px;
+        background: #f6f8fa;
+        border-radius: 8px;
+        padding: 10px;
+        color: #657184;
+        margin-top: 18px;
+      }
+      .stage {
+        padding: 26px 34px 60px;
+        min-width: 0;
+      }
+      .stage-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 18px;
+      }
+      .stage-head h2 {
+        margin: 0 0 4px;
+        font-size: 22px;
+      }
+      .stage-head p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .prototype {
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+      }
+      .phone-shell {
+        width: 411px;
+        background: #191d22;
+        border-radius: 42px;
+        padding: 11px;
+        box-shadow: 0 22px 60px rgba(29, 45, 65, 0.25);
+        flex: 0 0 auto;
+      }
+      .phone {
+        width: 389px;
+        height: 844px;
+        border-radius: 33px;
+        overflow: hidden;
+        background: var(--page);
+        position: relative;
+      }
+      .wx-status {
+        height: 32px;
+        background: var(--top);
+        padding: 8px 18px 0;
+        font-size: 11px;
+        font-weight: 650;
+        display: flex;
+        justify-content: space-between;
+      }
+      .wx-bar {
+        height: 54px;
+        background: var(--top);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        font-weight: 700;
+        position: relative;
+        padding: 0 72px;
+      }
+      .wx-back {
+        position: absolute;
+        left: 16px;
+        width: 44px;
+        height: 44px;
+        border: 0;
+        background: transparent;
+        font-size: 30px;
+        font-weight: 300;
+        cursor: pointer;
+      }
+      .capsule {
+        position: absolute;
+        right: 12px;
+        width: 82px;
+        height: 32px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 900;
+      }
+      .page {
+        height: 758px;
+        overflow: auto;
+        padding: 14px 14px 90px;
+        scrollbar-width: none;
+      }
+      .page::-webkit-scrollbar {
+        display: none;
+      }
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 6px 0 12px;
+      }
+      .section-head h3 {
+        font-size: 17px;
+        margin: 0;
+        color: #2f64aa;
+        font-weight: 700;
+      }
+      .section-head h3:before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 22px;
+        border-radius: 3px;
+        background: #5a9cf5;
+        vertical-align: -5px;
+        margin-right: 9px;
+      }
+      .section-head a {
+        color: #8592a3;
+        font-size: 13px;
+      }
+      .category-scroll {
+        display: flex;
+        gap: 8px;
+        overflow: hidden;
+        margin-bottom: 12px;
+      }
+      .category {
+        white-space: nowrap;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.62);
+        border-radius: 9px;
+        color: #667386;
+      }
+      .category.active {
+        background: linear-gradient(135deg, var(--blue), var(--blue2));
+        color: #fff;
+      }
+      .feature-card {
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+      .cover {
+        height: 178px;
+        padding: 18px;
+        display: flex;
+        align-items: flex-end;
+        position: relative;
+        color: #fff;
+        background: linear-gradient(135deg, #385f91, #87afd8);
+      }
+      .cover:after {
+        content: "";
+        position: absolute;
+        right: -25px;
+        top: -38px;
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        border: 25px solid rgba(255, 255, 255, 0.12);
+      }
+      .cover h3 {
+        font-size: 21px;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+      }
+      .cover-badge {
+        position: absolute;
+        left: 16px;
+        top: 14px;
+        background: rgba(255, 255, 255, 0.88);
+        color: #3d72b8;
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+      .feature-body {
+        padding: 14px 16px;
+      }
+      .feature-body p {
+        margin: 0 0 10px;
+        color: #68758a;
+      }
+      .chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        background: #e8f2ff;
+        color: #4c83c9;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 11px;
+      }
+      .company {
+        border-top: 1px solid var(--line);
+        margin-top: 12px;
+        padding-top: 11px;
+        color: #667386;
+        font-size: 12px;
+      }
+      .quick {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .quick-item {
+        height: 92px;
+        background: #fff;
+        border: 0;
+        border-radius: 12px;
+        box-shadow: 0 5px 18px rgba(62, 93, 130, 0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        color: #273448;
+      }
+      .quick-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+        background: linear-gradient(135deg, #6ca8ff, #4185ed);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(74, 143, 247, 0.3);
+      }
+      .quick-icon svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+      }
+      .search {
+        height: 46px;
+        border-radius: 24px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        color: #a0a9b4;
+        margin-bottom: 12px;
+        box-shadow: 0 3px 12px rgba(60, 84, 110, 0.05);
+      }
+      .list-card {
+        background: #fff;
+        border-radius: 13px;
+        padding: 12px;
+        margin: 10px 0;
+        box-shadow: 0 4px 14px rgba(56, 82, 112, 0.06);
+      }
+      .list-top {
+        display: flex;
+        gap: 12px;
+      }
+      .list-cover {
+        width: 112px;
+        height: 83px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #91b8e7, #426a99);
+        flex: 0 0 auto;
+        position: relative;
+        overflow: hidden;
+      }
+      .list-cover:after {
+        content: "";
+        position: absolute;
+        width: 78px;
+        height: 78px;
+        border-radius: 50%;
+        border: 15px solid rgba(255, 255, 255, 0.15);
+        right: -22px;
+        top: -25px;
+      }
+      .list-info {
+        min-width: 0;
+      }
+      .list-info h4 {
+        font-size: 16px;
+        margin: 2px 0 7px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .list-info p {
+        color: #7d8998;
+        margin: 0;
+        font-size: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .list-bottom {
+        border-top: 1px solid var(--line);
+        margin-top: 10px;
+        padding-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .list-company {
+        color: #667386;
+        font-size: 12px;
+      }
+      .btn {
+        min-height: 40px;
+        border: 1px solid #d6e4f5;
+        border-radius: 9px;
+        background: #fff;
+        color: #4b86d7;
+        padding: 0 16px;
+        cursor: pointer;
+      }
+      .btn.primary {
+        border: 0;
+        background: linear-gradient(135deg, var(--blue), var(--blue2));
+        color: #fff;
+        box-shadow: 0 5px 14px rgba(73, 141, 238, 0.25);
+      }
+      .btn.light {
+        background: #eef6ff;
+        border: 0;
+      }
+      .btn.danger {
+        color: var(--danger);
+        background: #fff5f5;
+        border-color: #f3d7d7;
+      }
+      .btn:disabled {
+        background: #d9e0e7;
+        color: #fff;
+        box-shadow: none;
+      }
+      .type-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .type-card {
+        background: #fff;
+        border: 2px solid transparent;
+        border-radius: 14px;
+        padding: 14px;
+        min-height: 128px;
+        cursor: pointer;
+        box-shadow: 0 5px 16px rgba(55, 82, 112, 0.06);
+      }
+      .type-card.active {
+        border-color: #68a1f4;
+        background: #f7fbff;
+      }
+      .type-card .type-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        background: #eaf3ff;
+        color: #4e8de5;
+        display: grid;
+        place-items: center;
+        margin-bottom: 10px;
+      }
+      .type-card .type-icon svg {
+        width: 21px;
+        height: 21px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.8;
+      }
+      .type-card b {
+        display: block;
+        font-size: 14px;
+      }
+      .type-card span {
+        color: #8390a2;
+        font-size: 11px;
+      }
+      .step {
+        font-size: 12px;
+        color: #758398;
+        margin-bottom: 10px;
+      }
+      .step-line {
+        height: 4px;
+        background: #dbe5ef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 14px;
+      }
+      .step-line span {
+        display: block;
+        height: 100%;
+        background: #5c9aef;
+        width: 33%;
+      }
+      .form-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 15px;
+        margin-bottom: 12px;
+      }
+      .form-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .seg {
+        display: flex;
+        background: #edf1f5;
+        border-radius: 9px;
+        padding: 3px;
+        margin-bottom: 12px;
+      }
+      .seg button {
+        flex: 1;
+        border: 0;
+        background: transparent;
+        border-radius: 7px;
+        height: 36px;
+        color: #778496;
+        cursor: pointer;
+      }
+      .seg button.active {
+        background: #fff;
+        color: #377bd4;
+        box-shadow: 0 2px 7px rgba(62, 90, 124, 0.12);
+        font-weight: 650;
+      }
+      .field {
+        margin: 12px 0;
+      }
+      .field label {
+        display: block;
+        font-size: 12px;
+        color: #5f6d80;
+        margin-bottom: 6px;
+      }
+      .required {
+        color: #ef6767;
+      }
+      .input {
+        width: 100%;
+        height: 43px;
+        border: 1px solid #dbe2ea;
+        border-radius: 9px;
+        padding: 0 12px;
+        color: #243246;
+        background: #fbfcfd;
+        outline: none;
+      }
+      .input:focus {
+        border-color: #70a5ee;
+        background: #fff;
+      }
+      .textarea {
+        height: 88px;
+        padding-top: 11px;
+        resize: none;
+      }
+      .smart-box {
+        border: 1.5px dashed #9fc1ef;
+        background: #f4f9ff;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+      }
+      .smart-box strong {
+        display: block;
+        margin: 7px 0 3px;
+      }
+      .smart-box p {
+        font-size: 11px;
+        color: #7a899c;
+        margin: 0 0 10px;
+      }
+      .smart-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #6ca9ff, #4d8be8);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        margin: auto;
+      }
+      .hint {
+        background: #fff7dd;
+        border: 1px solid #f0dfa3;
+        border-radius: 9px;
+        padding: 9px 10px;
+        font-size: 11px;
+        color: #7c6c36;
+        margin-top: 10px;
+      }
+      .sticky-action {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 12px 14px 20px;
+        background: linear-gradient(to top, #fff 75%, rgba(255, 255, 255, 0));
+        display: flex;
+        gap: 10px;
+      }
+      .sticky-action .btn {
+        flex: 1;
+        height: 48px;
+      }
+      .detail-cover {
+        height: 210px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #34628f, #83add8);
+        color: #fff;
+        padding: 18px;
+        display: flex;
+        align-items: flex-end;
+        position: relative;
+        overflow: hidden;
+      }
+      .detail-cover:after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border: 35px solid rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        right: -60px;
+        top: -75px;
+      }
+      .detail-cover h2 {
+        margin: 0;
+        font-size: 23px;
+        position: relative;
+        z-index: 1;
+      }
+      .detail-meta {
+        background: #fff;
+        border-radius: 13px;
+        padding: 14px;
+        margin: 10px 0;
+      }
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #69768a;
+        margin: 7px 0;
+      }
+      .meta-dot {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: #edf4fc;
+        display: grid;
+        place-items: center;
+        color: #5f93d5;
+      }
+      .detail-block {
+        background: #fff;
+        border-radius: 13px;
+        padding: 15px;
+        margin: 10px 0;
+      }
+      .detail-block h3 {
+        font-size: 16px;
+        margin: 0 0 11px;
+        color: #3774c1;
+      }
+      .detail-block h3:before {
+        content: "";
+        display: inline-block;
+        width: 3px;
+        height: 18px;
+        background: #5d9def;
+        border-radius: 3px;
+        vertical-align: -4px;
+        margin-right: 8px;
+      }
+      .detail-block p {
+        color: #5f6c7e;
+        margin: 0;
+        line-height: 1.75;
+      }
+      .source-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: #f5f8fb;
+        border-radius: 9px;
+      }
+      .source-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: #dcecff;
+        color: #4382d8;
+        display: grid;
+        place-items: center;
+        font-weight: 750;
+      }
+      .state-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .state-tabs button {
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 14px;
+        background: rgba(255, 255, 255, 0.65);
+        color: #647286;
+      }
+      .state-tabs button.active {
+        background: #5a96eb;
+        color: #fff;
+      }
+      .status-chip {
+        padding: 3px 7px;
+        border-radius: 5px;
+        font-size: 10px;
+        background: #eaf3ff;
+        color: #4f86d0;
+      }
+      .status-chip.off {
+        background: #f0f1f3;
+        color: #7b8490;
+      }
+      .manage-actions {
+        display: flex;
+        gap: 7px;
+      }
+      .toast {
+        position: absolute;
+        left: 50%;
+        bottom: 92px;
+        transform: translateX(-50%) translateY(12px);
+        background: rgba(24, 29, 35, 0.9);
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 9px;
+        font-size: 12px;
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.25s;
+        z-index: 20;
+        white-space: nowrap;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .review {
+        width: 360px;
+        flex: 0 0 auto;
+      }
+      .review-card {
+        background: #fff;
+        border: 1px solid #dfe5eb;
+        border-radius: 13px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .review-card h3 {
+        margin: 0 0 9px;
+        font-size: 15px;
+      }
+      .review-card p,
+      .review-card li {
+        color: #667386;
+        font-size: 12px;
+      }
+      .review-card ul {
+        padding-left: 18px;
+        margin: 6px 0;
+      }
+      .value {
+        font:
+          12px ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        background: #f0f3f6;
+        border-radius: 5px;
+        padding: 3px 6px;
+        display: inline-block;
+      }
+      .review-row {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 7px;
+        font-size: 12px;
+        margin: 6px 0;
+      }
+      .review-row b {
+        color: #7d8896;
+      }
+      .desktop {
+        display: none;
+        width: 100%;
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        min-height: 720px;
+      }
+      .desktop.active {
+        display: block;
+      }
+      .phone-wrap.hidden {
+        display: none;
+      }
+      .admin-top {
+        height: 60px;
+        background: #163b67;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 22px;
+      }
+      .admin-body {
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        min-height: 660px;
+      }
+      .admin-nav {
+        background: #102d4f;
+        color: #c6d3e1;
+        padding: 18px 12px;
+      }
+      .admin-nav div {
+        padding: 11px 14px;
+        border-radius: 7px;
+        margin: 4px 0;
+      }
+      .admin-nav .active {
+        background: #2e73bd;
+        color: #fff;
+      }
+      .admin-main {
+        padding: 22px;
+        background: #f4f6f8;
+      }
+      .admin-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .admin-filter {
+        display: flex;
+        gap: 9px;
+        background: #fff;
+        padding: 14px;
+        border-radius: 10px;
+        margin: 16px 0;
+      }
+      .admin-input {
+        height: 38px;
+        border: 1px solid #dce2e8;
+        border-radius: 7px;
+        background: #fff;
+        padding: 0 11px;
+        min-width: 150px;
+      }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 12px;
+      }
+      .admin-table th,
+      .admin-table td {
+        padding: 13px 12px;
+        border-bottom: 1px solid #edf0f2;
+        text-align: left;
+      }
+      .admin-table th {
+        background: #f8fafb;
+        color: #687588;
+      }
+      .table-actions button {
+        border: 0;
+        background: transparent;
+        color: #3e7fc9;
+        cursor: pointer;
+        margin-right: 8px;
+      }
+      .table-actions button.delete {
+        color: #e16868;
+      }
+      .desktop-note {
+        padding: 12px 15px;
+        background: #fff8dd;
+        border-radius: 8px;
+        margin-top: 14px;
+        color: #7a6b3b;
+        font-size: 12px;
+      }
+      @media (max-width: 1100px) {
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+        .controls {
+          position: static;
+          height: auto;
+        }
+        .prototype {
+          flex-wrap: wrap;
+        }
+        .review {
+          width: 411px;
+        }
+        .stage {
+          padding: 20px 14px;
+        }
+      }
+      /* 移动端点击区域专项覆盖 */
+      .section-head a {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+      .category {
+        min-height: 44px;
+        padding-top: 0;
+        padding-bottom: 0;
+        display: flex;
+        align-items: center;
+      }
+      .btn {
+        min-height: 44px;
+      }
+      .seg button {
+        height: 40px;
+      }
+      .state-tabs button {
+        min-height: 44px;
+      }
+      /* v0.2：来源录入 → 智能解析 → 人工确认 */
+      .category-scroll {
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .category-scroll::-webkit-scrollbar {
+        display: none;
+      }
+      .category {
+        border: 0;
+        cursor: pointer;
+        font: inherit;
+      }
+      .flow-note {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #eaf3ff;
+        color: #4b77ad;
+        font-size: 12px;
+      }
+      .flow-note b {
+        font-size: 13px;
+      }
+      .source-action {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .source-action .btn {
+        flex: 1;
+      }
+      .success-box {
+        border: 1px solid #b9dfc8;
+        background: #f1fbf5;
+        color: #47755a;
+        border-radius: 10px;
+        padding: 11px 12px;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+      .locked-field {
+        position: relative;
+      }
+      .locked-badge {
+        position: absolute;
+        right: 9px;
+        top: 32px;
+        color: #7c8b9d;
+        font-size: 10px;
+      }
+      .field-help {
+        font-size: 10px;
+        color: #8a96a5;
+        margin-top: 5px;
+      }
+      .tag-picker {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-top: 8px;
+        max-height: 154px;
+        overflow: auto;
+      }
+      .tag-option {
+        border: 1px solid #dce6f2;
+        background: #fff;
+        color: #667689;
+        border-radius: 7px;
+        padding: 6px 4px;
+        font-size: 10px;
+        cursor: pointer;
+      }
+      .tag-option.active {
+        background: #e8f2ff;
+        border-color: #82b0ee;
+        color: #3978cb;
+      }
+      .parse-result {
+        border-left: 3px solid #69a1ee;
+        padding-left: 10px;
+        color: #607186;
+        font-size: 11px;
+        margin: 10px 0;
+      }
+      .admin-main.create {
+        max-width: 980px;
+      }
+      .admin-type-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 18px 0;
+      }
+      .admin-type-card {
+        border: 1px solid #dfe6ed;
+        background: #fff;
+        border-radius: 10px;
+        padding: 16px;
+        cursor: pointer;
+        text-align: left;
+        min-height: 112px;
+      }
+      .admin-type-card:hover,
+      .admin-type-card.active {
+        border-color: #70a6ed;
+        background: #f5f9ff;
+      }
+      .admin-type-card b {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .admin-type-card span {
+        color: #7b8796;
+        font-size: 12px;
+      }
+      .admin-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .admin-form-grid .wide {
+        grid-column: 1/-1;
+      }
+      .admin-panel {
+        background: #fff;
+        border-radius: 10px;
+        padding: 18px;
+      }
+      .admin-source {
+        border: 1px dashed #9ebfe9;
+        background: #f7fbff;
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .admin-breadcrumb {
+        color: #6f7c8c;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+      .admin-breadcrumb button {
+        border: 0;
+        background: transparent;
+        color: #3479ca;
+        cursor: pointer;
+        padding: 0;
+      }
+      .small {
+        font-size: 11px;
+        color: #8a95a3;
+      }
+      .composer {
+        border: 1px solid #dbe5ef;
+        background: #fbfdff;
+        border-radius: 13px;
+        overflow: hidden;
+        transition: 0.2s;
+      }
+      .composer:focus-within {
+        border-color: #72a7ed;
+        box-shadow: 0 0 0 3px rgba(92, 154, 239, 0.1);
+        background: #fff;
+      }
+      .composer textarea {
+        display: block;
+        width: 100%;
+        min-height: 152px;
+        border: 0;
+        background: transparent;
+        padding: 14px 14px 8px;
+        resize: none;
+        outline: 0;
+        color: #263549;
+        font:
+          14px/1.65 -apple-system,
+          BlinkMacSystemFont,
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
+      }
+      .composer-files {
+        padding: 0 12px 8px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .composer-file {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #edf5ff;
+        color: #4b7fbe;
+        border-radius: 7px;
+        padding: 6px 8px;
+        font-size: 11px;
+      }
+      .composer-file button {
+        border: 0;
+        background: transparent;
+        color: #8392a5;
+        cursor: pointer;
+        padding: 0;
+      }
+      .composer-toolbar {
+        border-top: 1px solid #e7edf3;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .tool-btn {
+        border: 0;
+        background: #edf5ff;
+        color: #3f7aca;
+        border-radius: 8px;
+        min-height: 36px;
+        padding: 0 10px;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .tool-btn.voice.active {
+        background: #4f91e9;
+        color: #fff;
+      }
+      .composer-count {
+        margin-left: auto;
+        color: #9aa5b2;
+        font-size: 10px;
+      }
+      .composer-tip {
+        color: #8592a2;
+        font-size: 10px;
+        margin: 7px 2px 0;
+      }
+      .publish-context {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 2px 0 12px;
+        color: #33445a;
+      }
+      .publish-context span {
+        display: block;
+        font-size: 11px;
+        font-weight: 400;
+        color: #8190a2;
+        margin-top: 2px;
+      }
+      /* v0.5：来源型项目的强引导、示例与异常分支 */
+      .source-summary {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        background: #f3f7fc;
+        color: #63748a;
+        font-size: 11px;
+      }
+      .source-summary b {
+        color: #344b68;
+        font-size: 12px;
+      }
+      .auth-account {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        padding: 10px;
+        border: 1px solid #dce9f7;
+        border-radius: 10px;
+        background: #f8fbff;
+      }
+      .guide-callout {
+        padding: 12px;
+        border: 1px solid #f0d9a2;
+        border-radius: 11px;
+        background: #fff9e9;
+      }
+      .guide-callout strong {
+        display: block;
+        color: #795f24;
+      }
+      .guide-callout p {
+        margin: 4px 0 9px;
+        color: #846f3f;
+        font-size: 11px;
+      }
+      .text-link {
+        min-height: 36px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #347bd3;
+        cursor: pointer;
+        font-weight: 650;
+      }
+      .guide-panel {
+        margin-top: 10px;
+        padding: 12px;
+        border: 1px solid #cfe0f3;
+        border-radius: 11px;
+        background: #f6faff;
+      }
+      .guide-panel h4 {
+        margin: 0 0 8px;
+        color: #356cae;
+      }
+      .guide-step {
+        display: grid;
+        grid-template-columns: 24px 1fr;
+        gap: 8px;
+        margin: 8px 0;
+        color: #617186;
+        font-size: 11px;
+      }
+      .guide-step i {
+        width: 22px;
+        height: 22px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: #dcecff;
+        color: #3d7dce;
+        font-style: normal;
+        font-weight: 700;
+      }
+      .example-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 7px;
+      }
+      .example-chip {
+        min-height: 34px;
+        padding: 0 10px;
+        border: 1px solid #d8e5f4;
+        border-radius: 17px;
+        background: #f7fbff;
+        color: #4f7fb9;
+        cursor: pointer;
+        font-size: 10px;
+      }
+      .validation {
+        margin-top: 8px;
+        padding: 9px 10px;
+        border-radius: 9px;
+        font-size: 11px;
+      }
+      .validation.success {
+        border: 1px solid #b8dfc8;
+        background: #f0fbf4;
+        color: #47745a;
+      }
+      .validation.error {
+        border: 1px solid #f0c4c4;
+        background: #fff3f3;
+        color: #a95757;
+      }
+      .confirm-line {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        margin-top: 10px;
+        color: #617186;
+        font-size: 11px;
+      }
+      .confirm-line input {
+        margin-top: 2px;
+        accent-color: #4c8ffb;
+      }
+      .web-branch {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        margin-top: 10px;
+      }
+      .recording {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-top: 1px solid #e7edf3;
+        background: #f1f7ff;
+        color: #3d76bd;
+        font-size: 11px;
+      }
+      .wave {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        height: 18px;
+      }
+      .wave i {
+        width: 2px;
+        border-radius: 3px;
+        background: #4c8ffb;
+        animation: pulse 0.8s ease-in-out infinite alternate;
+      }
+      .wave i:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .wave i:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .wave i:nth-child(4) {
+        animation-delay: 0.45s;
+      }
+      @keyframes pulse {
+        from {
+          height: 5px;
+        }
+        to {
+          height: 18px;
+        }
+      }
+      .material-insight {
+        margin: 0 12px 9px;
+        padding: 8px;
+        border-radius: 8px;
+        background: #f5f8fb;
+        color: #748296;
+        font-size: 10px;
+      }
+      .scheme-note {
+        border-left: 3px solid #f0b758;
+        padding-left: 9px;
+        color: #715f3a;
+        font-size: 11px;
+      }
+      .wechat-auth-page {
+        padding: 15px 12px;
+        border: 1px solid #dce4ec;
+        border-radius: 13px;
+        background: #f7f8fa;
+        text-align: center;
+      }
+      .wechat-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        color: #20252b;
+        font-weight: 700;
+      }
+      .wechat-logo {
+        width: 28px;
+        height: 28px;
+        display: grid;
+        place-items: center;
+        border-radius: 9px;
+        background: #07c160;
+        color: #fff;
+        font-size: 16px;
+      }
+      .wechat-auth-page h4 {
+        margin: 12px 0 4px;
+        font-size: 15px;
+      }
+      .wechat-auth-page p {
+        margin: 0;
+        color: #8a949f;
+        font-size: 10px;
+      }
+      .qr-wrap {
+        width: 176px;
+        height: 176px;
+        position: relative;
+        margin: 14px auto 10px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 5px 18px rgba(35, 50, 69, 0.12);
+        cursor: pointer;
+        overflow: hidden;
+      }
+      .qr-code {
+        display: grid;
+        grid-template-columns: repeat(15, 1fr);
+        gap: 1px;
+        width: 100%;
+        height: 100%;
+        transition: 0.25s;
+      }
+      .qr-code span {
+        background: transparent;
+      }
+      .qr-code span.on {
+        background: #171a1f;
+      }
+      .qr-wrap.scanning .qr-code {
+        filter: blur(1px);
+        opacity: 0.28;
+        transform: scale(0.96);
+      }
+      .qr-scan-line {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        top: 14px;
+        height: 2px;
+        background: #07c160;
+        box-shadow: 0 0 8px #07c160;
+        animation: scanline 1s linear infinite;
+      }
+      @keyframes scanline {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(145px);
+        }
+      }
+      .qr-state {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.85);
+        color: #4d6178;
+        font-size: 11px;
+        font-weight: 650;
+      }
+      .auth-check {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        margin: auto;
+        border-radius: 50%;
+        background: #07c160;
+        color: #fff;
+        font-size: 32px;
+        box-shadow: 0 5px 18px rgba(7, 193, 96, 0.3);
+        animation: pop 0.35s ease-out;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.55);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .field-rule {
+        margin: 7px 0 9px;
+        padding: 9px 10px;
+        border-radius: 9px;
+        background: #f5f8fc;
+        color: #65758a;
+        font-size: 10px;
+      }
+      .image-candidates {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        margin-bottom: 8px;
+      }
+      .image-candidate {
+        height: 66px;
+        position: relative;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #a9c7e8, #4f79a9);
+        cursor: pointer;
+        overflow: hidden;
+      }
+      .image-candidate:nth-child(2) {
+        filter: hue-rotate(28deg);
+      }
+      .image-candidate:nth-child(3) {
+        filter: hue-rotate(65deg);
+      }
+      .image-candidate span {
+        position: absolute;
+        left: 4px;
+        bottom: 4px;
+        padding: 2px 4px;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.52);
+        color: #fff;
+        font-size: 8px;
+      }
+      .selected-image {
+        width: 74px;
+        height: 54px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #8eb6df, #3d6898);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="workspace">
+      <aside class="controls">
+        <h1>小联帮你链</h1>
+        <div class="sub">高保真交互原型 v0.2</div>
+        <h3>角色视角</h3>
+        <button class="control-btn active role" data-role="publisher">
+          会员｜有发布权限</button
+        ><button class="control-btn role" data-role="viewer">
+          会员｜无发布权限</button
+        ><button class="control-btn role" data-role="federation">工商联</button
+        ><button class="control-btn role" data-role="admin">
+          公司内部PC后台
+        </button>
+        <h3>会员端页面</h3>
+        <button class="control-btn page-jump active" data-page="home">
+          小联帮你链首页</button
+        ><button class="control-btn page-jump" data-page="list">找项目</button
+        ><button class="control-btn page-jump" data-page="types">
+          选择项目录入方式</button
+        ><button class="control-btn page-jump" data-page="manage">
+          我的项目 / 项目管理
+        </button>
+        <div class="rule">
+          v0.7交互提示：公众号授权后只读取账号基础信息并直接生成项目字段，不再拉取或展示文章；项目介绍的解析材料仅支持 DOC/DOCX，解析后自动挂接到相关附件。
+        </div>
+      </aside>
+      <main class="stage">
+        <header class="stage-head">
+          <div>
+            <h2 id="stageTitle">会员端｜小联帮你链首页</h2>
+            <p>375×812参考画布；页面控件按44px最小点击区域设计。</p>
+          </div>
+        </header>
+        <div class="prototype">
+          <div class="phone-wrap" id="phoneWrap">
+            <div class="phone-shell">
+              <div class="phone">
+                <div class="wx-status">
+                  <span>9:41</span><span>●●●　⌁　▰</span>
+                </div>
+                <div class="wx-bar">
+                  <button class="wx-back" id="backBtn">‹</button
+                  ><span id="wxTitle">小联帮你链</span
+                  ><span class="capsule">•••　◉</span>
+                </div>
+                <div class="page" id="appPage"></div>
+                <div class="toast" id="toast"></div>
+              </div>
+            </div>
+          </div>
+          <div class="desktop" id="desktop"></div>
+          <aside class="review" id="review"></aside>
+        </div>
+      </main>
+    </div>
+    <script>
+      const I = {
+        folder: `<svg viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v10H3z"/></svg>`,
+        send: `<svg viewBox="0 0 24 24"><path d="m3 11 17-7-6 17-3-7z"/><path d="m11 14 4-4"/></svg>`,
+        building: `<svg viewBox="0 0 24 24"><path d="M4 21V5l8-3v19M12 8h8v13M7 7h2M7 11h2M7 15h2M15 11h2M15 15h2"/></svg>`,
+        link: `<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>`,
+        spark: `<svg viewBox="0 0 24 24"><path d="m12 2 1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>`,
+        doc: `<svg viewBox="0 0 24 24"><path d="M6 2h9l4 4v16H6zM14 2v5h5M9 12h7M9 16h7"/></svg>`,
+        mini: `<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9 7h6M9 17h6"/></svg>`,
+        chat: `<svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg>`,
+      };
+      const categories = [
+        "软件服务",
+        "硬件制造",
+        "咨询服务",
+        "研发创新",
+        "运营维护",
+        "创意制作",
+        "成品销售",
+        "定制方案",
+        "外包服务",
+        "企业方案",
+        "消费服务",
+        "公共项目",
+        "培训服务",
+        "工程建设",
+        "材料供应",
+        "数字营销",
+        "数据智能",
+        "安全合规",
+        "供应链管理",
+        "环保可持续",
+      ];
+      const types = [
+        {
+          value: "official_account",
+          variant: "account",
+          label: "公众号",
+          choice: "我有公众号",
+          desc: "授权后读取账号基础信息",
+          icon: I.chat,
+          name: "西城区中小企业惠企政策申报与服务平台",
+          intro:
+            "面向西城区中小企业集中提供惠企政策解读、项目申报指引、材料清单下载和办理进度提醒服务。平台持续汇集市区两级产业扶持、科技创新、融资支持及人才发展政策，帮助企业快速识别适用事项，规范准备申报材料，并获得专业人员的咨询与对接支持。",
+          cats: ["公共项目", "企业方案"],
+          cta: "进入公众号主页",
+        },
+        {
+          value: "mini_program_link",
+          label: "微信小程序",
+          choice: "我有微信小程序页面",
+          desc: "提供后台生成的长期页面链接",
+          icon: I.mini,
+          name: "中小企业数字化财税协同服务平台",
+          intro:
+            "面向成长型中小企业提供财税事项在线办理、票据归集、申报进度查询和经营数据分析服务。企业可通过统一入口提交业务资料、跟踪处理节点，并由专业顾问提供风险提示和政策适配建议，协助管理人员提升财务协同效率，降低日常运营与合规管理成本。",
+          cats: ["软件服务", "咨询服务"],
+          cta: "立即体验",
+        },
+        {
+          value: "external_web",
+          label: "网页链接",
+          choice: "我有一个网页链接",
+          desc: "尝试读取网页，失败后人工补录",
+          icon: I.link,
+          name: "西城区企业全生命周期综合服务平台",
+          intro:
+            "围绕企业设立、经营发展、项目申报、融资对接和人才服务等高频场景，提供事项查询、材料下载、在线预约及服务进度跟踪能力。平台统一归集各类企业服务资源，按企业发展阶段匹配办理指引与专业机构，帮助会员企业减少信息检索和跨部门沟通成本。",
+          cats: ["企业方案", "公共项目"],
+          cta: "复制网址",
+        },
+        {
+          value: "basic_info",
+          label: "项目介绍",
+          choice: "我只有项目介绍",
+          desc: "文字、语音和文件可组合解析",
+          icon: I.building,
+          name: "中小企业数字化转型诊断与实施服务",
+          intro:
+            "由专业顾问团队为中小企业提供数字化现状评估、业务流程梳理、转型路线规划和系统落地实施服务。项目结合企业规模、行业特点与经营目标形成分阶段建设方案，覆盖需求分析、产品选型、数据治理、人员培训和持续运营辅导，保障数字化能力与实际业务协同推进。",
+          cats: ["咨询服务", "定制方案"],
+          cta: "联系对接",
+        },
+      ];
+      const projectSamples = [
+        {
+          ...types[0],
+          displayId: "official_account",
+          listLabel: "公众号",
+        },
+        {
+          ...types[1],
+          displayId: "mini_program_link",
+          listLabel: "微信小程序",
+        },
+        { ...types[2], displayId: "external_web", listLabel: "网页链接" },
+        { ...types[3], displayId: "basic_info", listLabel: "联系对接" },
+      ];
+      let state = {
+        role: "publisher",
+        page: "home",
+        selected: types[0],
+        stack: [],
+        category: "全部",
+        parsed: false,
+        authorized: false,
+        authStage: "idle",
+        material: false,
+        miniNoPermission: false,
+        miniLink: "https://wxaurl.cn/8YxJpQ2Demo",
+        miniConfirmed: false,
+        miniValidation: "idle",
+        miniValidationMessage: "",
+        webResult: "idle",
+        webUrl: "https://www.xichengqifu.cn/enterprise-service",
+        voiceRecording: false,
+        basicText: "",
+        promoImage: "",
+        attachmentAdded: false,
+        selectedTags: [],
+        adminPage: "list",
+      };
+      const pageEl = document.querySelector("#appPage"),
+        titleEl = document.querySelector("#wxTitle"),
+        toastEl = document.querySelector("#toast");
+      function toast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        setTimeout(() => toastEl.classList.remove("show"), 2100);
+      }
+      function cover(name, badge = "优质项目") {
+        return `<div class="cover"><span class="cover-badge">${badge}</span><h3>${name}</h3></div>`;
+      }
+      function categoryBar(includeAll = false) {
+        const items = includeAll ? ["全部", ...categories] : categories;
+        return `<div class="category-scroll">${items.map((c) => `<button class="category ${state.category === c ? "active" : ""}" onclick="setCategory('${c}')">${c}</button>`).join("")}</div>`;
+      }
+      function setCategory(c) {
+        state.category = c;
+        render();
+      }
+      function resetSource() {
+        state.parsed = false;
+        state.authorized = false;
+        state.authStage = "idle";
+        state.material = false;
+        state.miniNoPermission = false;
+        state.miniLink = "https://wxaurl.cn/8YxJpQ2Demo";
+        state.miniConfirmed = false;
+        state.miniValidation = "idle";
+        state.miniValidationMessage = "";
+        state.webResult = "idle";
+        state.webUrl = "https://www.xichengqifu.cn/enterprise-service";
+        state.voiceRecording = false;
+        state.basicText = "";
+        state.promoImage = "";
+        state.attachmentAdded = false;
+        state.selectedTags = [...state.selected.cats];
+      }
+      function go(page, push = true) {
+        if (push && state.page !== page) state.stack.push(state.page);
+        state.page = page;
+        render();
+        document
+          .querySelectorAll(".page-jump")
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.page === page),
+          );
+      }
+      document.querySelector("#backBtn").onclick = () => {
+        if (state.stack.length) {
+          state.page = state.stack.pop();
+          render();
+        } else go("home", false);
+      };
+      function home() {
+        const canPublish = state.role === "publisher",
+          fed = state.role === "federation";
+        return `<div class="section-head"><h3>优质项目推荐</h3><a onclick="go('list')">查看全部 ›</a></div>${categoryBar()}<div class="feature-card">${cover(state.category === "全部" ? "中小企业数字化转型诊断与实施服务" : `${state.category}优质项目`)}<div class="feature-body"><p>由专业顾问提供数字化现状评估、转型路线规划、系统实施和持续运营辅导。</p><div class="chips"><span class="chip">${state.category === "全部" ? "咨询服务" : state.category}</span><span class="chip">定制方案</span></div><div class="company">▦ 北京深蓝智联科技有限公司<br>♙ 张建国｜138****3876</div></div></div><div class="section-head" style="margin-top:20px"><h3>常用功能</h3></div><div class="quick">${canPublish ? `<button class="quick-item" onclick="go('types')"><span class="quick-icon">${I.send}</span>发布项目</button><button class="quick-item" onclick="go('manage')"><span class="quick-icon">${I.folder}</span>我的项目</button>` : ""}${fed ? `<button class="quick-item" onclick="go('manage')"><span class="quick-icon">${I.folder}</span>项目管理</button>` : ""}<button class="quick-item" onclick="toast('找企业能力保持现状')"><span class="quick-icon">${I.building}</span>找企业</button></div>`;
+      }
+      function list() {
+        const visible =
+          state.category === "全部"
+            ? projectSamples
+            : projectSamples.filter((t) => t.cats.includes(state.category));
+        return `<div class="search">⌕　搜索项目名称</div>${categoryBar(true)}${visible.length ? visible.map((t, i) => `<article class="list-card" onclick="openDetail('${t.displayId}')"><div class="list-top"><div class="list-cover" style="filter:hue-rotate(${i * 24}deg)"></div><div class="list-info"><h4>${t.name}</h4><p>${t.intro}</p><div class="chips"><span class="chip" style="background:#f3ecff;color:#7957b5">${t.listLabel}</span>${t.cats.map((c) => `<span class="chip">${c}</span>`).join("")}</div></div></div><div class="list-bottom"><span class="list-company">▦ ${t.variant ? "西城区企业服务" : i % 2 ? "西城区企业综合服务中心" : "北京深蓝智联科技有限公司"}</span><button class="btn light">查看详情</button></div></article>`).join("") : `<div class="form-card" style="text-align:center;color:#8793a2;padding:30px">暂无该分类项目，切换其他分类查看</div>`}`;
+      }
+      function typeSelect() {
+        return `<div class="publish-context">你现在能提供什么？<span>只需选择最符合现状的一种方式；录入并解析后，再人工确认项目信息。</span></div><div class="type-grid">${types.map((t) => `<article class="type-card ${state.selected.value === t.value ? "active" : ""}" onclick="chooseType('${t.value}')"><div class="type-icon">${t.icon}</div><b>${t.choice}</b><span>${t.desc}</span></article>`).join("")}</div><div class="hint">公众号必须先授权并读取账号基础信息；小程序需提供公众平台生成的长期链接；网页可能解析失败；只有介绍时可组合文字、语音和 DOC/DOCX 文件。</div><div class="sticky-action"><button class="btn primary" onclick="resetSource();go('form')">下一步</button></div>`;
+      }
+      function chooseType(v) {
+        state.selected = types.find((t) => t.value === v);
+        resetSource();
+        render();
+      }
+      function qrMarkup() {
+        return Array.from({ length: 225 }, (_, i) => {
+          const row = Math.floor(i / 15),
+            col = i % 15;
+          const finder =
+            (row < 5 && col < 5) ||
+            (row < 5 && col > 9) ||
+            (row > 9 && col < 5);
+          const on = finder
+            ? row % 4 !== 1 || col % 4 !== 1
+            : (i * 7 + row * 3 + col) % 5 < 2;
+          return `<span class="${on ? "on" : ""}"></span>`;
+        }).join("");
+      }
+      function authBlock(admin = false) {
+        if (state.authorized)
+          return `<div class="auth-account"><span class="source-logo">西企</span><div><b>西城区企业服务</b><div class="small">✓ 授权成功　已读取公众号基础信息并完成智能拆解</div></div></div><div class="guide-panel"><h4>已读取的公众号基础信息</h4><div class="guide-step"><i>名</i><span>公众号名称：<b>西城区企业服务</b></span></div><div class="guide-step"><i>号</i><span>微信号：<b>xicheng_qifu</b></span></div><div class="guide-step"><i>类</i><span>账号类型：<b>服务号｜已认证</b></span></div><div class="guide-step"><i>介</i><span>功能介绍：面向西城区企业提供惠企政策、申报辅导和资源对接服务。</span></div><div class="scheme-note">本期不读取公众号文章。系统仅根据以上账号资料生成下方项目名称、简介和分类，发布人仍需确认或修改。</div></div>`;
+        if (state.authStage === "idle")
+          return `<div class="smart-box"><div class="smart-icon">${I.chat}</div><strong>先完成公众号授权</strong><p>授权是读取公众号名称、微信号、账号类型、认证状态和功能介绍等基础信息的必要操作，需要公众号管理员确认。</p><button class="btn primary" onclick="startAuthorization()">${admin ? "生成授权二维码" : "发起授权"}</button></div><div class="hint">本期不读取公众号文章，也不展示文章选择；授权成功后直接拆解项目字段。</div>`;
+        const scanning = state.authStage === "scanning";
+        const success = state.authStage === "success";
+        return `<div class="wechat-auth-page"><div class="wechat-brand"><span class="wechat-logo">微</span>微信公众平台授权</div><h4>${success ? "授权成功" : scanning ? "正在确认管理员身份" : "请公众号管理员扫码"}</h4><p>${success ? "即将返回并读取公众号基础信息" : "使用绑定该公众号的管理员微信扫码确认"}</p><div class="qr-wrap ${scanning ? "scanning" : ""}" onclick="scanAuthorization()">${success ? `<div class="qr-state"><div><span class="auth-check">✓</span><div style="margin-top:10px;color:#07a650">已授权</div></div></div>` : `<div class="qr-code">${qrMarkup()}</div>${scanning ? `<span class="qr-scan-line"></span><div class="qr-state">正在读取授权结果…</div>` : ""}`}</div><div class="small">${state.authStage === "qr" ? "原型演示：点击二维码模拟管理员扫码" : scanning ? "扫码成功，正在建立公众号授权关系" : "公众号基础信息权限已确认"}</div></div>`;
+      }
+      function miniProgramSource() {
+        const validation =
+          state.miniValidation === "success"
+            ? `<div class="validation success">✓ ${state.miniValidationMessage}</div>`
+            : state.miniValidation === "error"
+              ? `<div class="validation error">✕ ${state.miniValidationMessage}</div>`
+              : "";
+        return `<div class="guide-callout"><strong>请提供长期有效的小程序页面链接</strong><p>不要从微信小程序右上角直接转发或复制链接。正确链接应由目标小程序管理员在电脑端微信公众平台生成。</p></div><div class="guide-panel"><h4>长期链接获取方法</h4><div class="guide-step"><i>1</i><span>电脑登录 <b>微信公众平台 mp.weixin.qq.com</b>，进入需要发布的对应小程序。</span></div><div class="guide-step"><i>2</i><span>在“小程序链接 / URL Link”生成入口，选择主页或需要体验的指定页面。</span></div><div class="guide-step"><i>3</i><span>将有效期设置为<b>长期 / 永久有效</b>，生成后复制形如 <b>https://wxaurl.cn/...</b> 的链接。</span></div><div class="guide-step"><i>4</i><span>回到西小联粘贴并测试。没有后台权限时，请联系该小程序管理员提供。</span></div><div class="scheme-note">微信公众平台菜单名称可能随账号权限变化；重点是从目标小程序后台生成 URL Link，而不是在微信客户端转发。</div></div><div class="field"><label><span class="required">*</span> 长期有效的小程序页面链接</label><input id="miniLinkInput" class="input" value="${state.miniLink}" oninput="updateMiniLink(this.value)" placeholder="示例：https://wxaurl.cn/xxxx"><div class="field-help">可对应小程序主页或任意指定页面；系统不会仅凭格式承诺有效期。</div><div class="example-actions"><button class="example-chip" onclick="fillMiniExample('valid')">填入正确示例</button><button class="example-chip" onclick="fillMiniExample('share')">模拟微信内复制链接</button><button class="example-chip" onclick="fillMiniExample('path')">模拟只粘贴页面路径</button></div>${validation}</div><label class="confirm-line"><input type="checkbox" ${state.miniConfirmed ? "checked" : ""} onchange="confirmMiniLink(this.checked)"><span>我已确认该链接由目标小程序管理员在微信公众平台生成，并设置为长期／永久有效。</span></label><div class="source-action"><button class="btn" onclick="toggleMiniPermission()">我没有后台权限</button><button class="btn primary" onclick="validateMiniLink()">校验并测试打开</button></div>${state.miniNoPermission ? `<div class="hint">请把以上获取方法发送给目标小程序管理员，由管理员生成 URL Link 后再粘贴。普通使用者无法从微信客户端生成可确认的长期链接。</div>` : ""}`;
+      }
+      function webSource() {
+        const result =
+          state.webResult === "success"
+            ? `<div class="validation success">✓ 已读取网页标题、description、Open Graph封面，并生成下方项目信息。</div>`
+            : state.webResult === "blocked"
+              ? `<div class="validation error">网页存在反爬或访问限制，未读取到内容。链接已保留，请在下方人工补充项目名称、简介和图片。</div>`
+              : "";
+        return `<div class="field"><label><span class="required">*</span> HTTPS网页链接</label><input class="input" value="${state.webUrl}" oninput="state.webUrl=this.value"><div class="field-help">系统将尝试读取网页标题、description 和 Open Graph 图片，读取结果取决于对方网站权限。</div></div><div class="web-branch"><button class="btn primary" onclick="parseWeb('success')">模拟解析成功</button><button class="btn" onclick="parseWeb('blocked')">模拟反爬失败</button></div>${result}<div class="hint">解析失败不阻断发布：进入人工确认区补齐必填字段；详情页按钮根据技术条件采用“立即体验”或“复制网址”。</div>`;
+      }
+      function basicSource() {
+        return `<div class="source-summary"><span>${I.spark}</span><span><b>三种内容可以组合提供</b><br>输入或粘贴文字、上传 DOC/DOCX 项目材料、语音转文字后，系统统一解析。</span></div><div class="composer"><textarea id="basicTextarea" placeholder="点此输入或粘贴项目介绍……" onfocus="seedBasicText()" oninput="updateBasicText(this.value)">${state.basicText}</textarea>${state.material ? `<div class="composer-files"><span class="composer-file">▣ 中小企业数字化转型服务方案.docx　1.5MB <button onclick="removeMaterial()">×</button></span></div><div class="material-insight">文件预识别：企业数字化诊断、转型路线设计、系统实施与持续运营服务。解析完成后，该 DOCX 将自动挂接到“相关附件”。</div>` : ""}${state.voiceRecording ? `<div class="recording"><span class="wave"><i></i><i></i><i></i><i></i></span>正在听，请描述项目；再次点击“结束录音”完成转文字</div>` : ""}<div class="composer-toolbar"><button class="tool-btn" onclick="addMaterial()">＋ 上传项目材料</button><button class="tool-btn voice ${state.voiceRecording ? "active" : ""}" onclick="voiceInput()">${state.voiceRecording ? "■ 结束录音" : "◉ 语音输入"}</button><span class="composer-count">仅支持 .doc / .docx</span></div></div><div class="composer-tip">初始为空；点击输入框、上传项目材料或完成语音输入会出现预设示例。PDF 等其他文件不能用于本步骤解析，可在解析结果的“相关附件”中另行添加。</div><button class="btn light" style="width:100%;margin-top:12px" onclick="parseBasic()">综合解析以上内容</button>`;
+      }
+      function sourceForm(t, admin = false) {
+        if (t.value === "official_account") return authBlock(admin);
+        if (t.value === "mini_program_link") return miniProgramSource();
+        if (t.value === "external_web") return webSource();
+        return basicSource();
+      }
+      function editableInfo(t, admin = false) {
+        const emptyResult =
+          t.value === "mini_program_link" ||
+          (t.value === "external_web" && state.webResult === "blocked");
+        const nameValue = emptyResult ? "" : t.name;
+        const introValue = emptyResult ? "" : t.intro;
+        const enterprise = admin
+          ? `<div class="field"><label><span class="required">*</span> 所属企业</label><select class="input"><option>请选择会员企业</option><option selected>北京深蓝智联科技有限公司</option><option>西城区企业综合服务中心</option></select><div class="field-help">后台创建时由工作人员指定所属企业。</div></div>`
+          : `<div class="field locked-field"><label><span class="required">*</span> 所属企业</label><input class="input" value="北京深蓝智联科技有限公司" disabled/><span class="locked-badge">系统读取</span><div class="field-help">根据当前账号归属企业自动填入，不支持修改。</div></div>`;
+        const sourceSpecific =
+          t.value === "official_account"
+            ? `<div class="field"><label>公众号来源</label><div class="success-box">✓ 西城区企业服务已授权；已读取名称、微信号、账号类型、认证状态和功能介绍。</div></div>`
+            : t.value === "mini_program_link"
+              ? `<div class="field"><label><span class="required">*</span> 小程序长期链接</label><input class="input" value="${state.miniLink}"><div class="field-help">已完成格式与打开测试；有效期由提供者确认。AppID和页面路径需由技术侧按跳转方案保存。</div></div>`
+              : t.value === "external_web"
+                ? `<div class="field"><label><span class="required">*</span> H5链接</label><input class="input" value="${state.webUrl}"><div class="field-help">${state.webResult === "blocked" ? "网页读取失败，以下字段由人工补充。" : "网页读取成功，可手动修改解析结果。"}</div></div>`
+                : `<div class="field"><label><span class="required">*</span> 联系人</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input class="input" value="张建国" placeholder="联系人姓名"><input class="input" value="13810243876" placeholder="联系人电话"></div></div>`;
+        const imageRule =
+          t.value === "official_account"
+            ? "公众号基础资料不作为项目宣传图片，当前请用户自主上传。"
+            : t.value === "external_web" && state.webResult === "success"
+              ? "已读取网页的 Open Graph 图片作为候选图；需由用户确认采用，或自主上传其他宣传图片。"
+              : "当前来源没有可确认的宣传图片，请用户自主上传。";
+        const candidates =
+          t.value === "external_web" && state.webResult === "success"
+              ? `<div class="image-candidates" style="grid-template-columns:1fr 1fr 1fr"><button class="image-candidate" onclick="selectPromoImage('web-og')"><span>网页OG图</span></button></div>`
+              : "";
+        const promoField = state.promoImage
+          ? `<div class="source-box"><span class="selected-image"></span><div><b>${state.promoImage === "upload" ? "企业服务项目宣传图.jpg" : "已选择来源候选图"}</b><div class="small">1600×900　可重新选择或上传</div></div><button class="text-link" style="margin-left:auto" onclick="clearPromoImage()">移除</button></div>`
+          : `${candidates}<button class="btn light" onclick="selectPromoImage('upload')">＋ 上传宣传图片</button>`;
+        const parsedMaterialAttachment =
+          t.value === "basic_info" && state.material
+            ? `<div class="source-box" style="margin-bottom:8px"><span class="source-logo">DOCX</span><div><b>中小企业数字化转型服务方案.docx</b><div class="small">1.5MB　由解析材料自动挂接</div></div><span class="locked-badge" style="margin-left:auto">自动挂接</span></div>`
+            : "";
+        const extraAttachment = state.attachmentAdded
+          ? `<div class="source-box" style="margin-bottom:8px"><span class="source-logo">PDF</span><div><b>项目服务实施方案.pdf</b><div class="small">2.3MB　由用户另行添加</div></div><button class="text-link" style="margin-left:auto" onclick="removeResultAttachment()">删除</button></div>`
+          : "";
+        const attachmentField = `${parsedMaterialAttachment}${extraAttachment}<button class="btn light" onclick="addResultAttachment()">＋ 添加其他附件</button><div class="field-help">用于智能解析的 DOC/DOCX 会在解析后自动挂接；此处还可继续添加 PDF 等其他项目附件。公众号、网页和小程序来源默认不产生附件。</div>`;
+        return `${enterprise}${sourceSpecific}<div class="field"><label><span class="required">*</span> 项目名称</label><input class="input" value="${nameValue}" placeholder="${emptyResult ? "未解析到，请输入正式项目名称" : "请输入正式项目名称"}"/></div><div class="field"><label><span class="required">*</span> 项目简介</label><textarea class="input textarea" style="height:132px" placeholder="${emptyResult ? "未解析到，请补充约150字的项目简介" : "请输入约150字的项目简介"}">${introValue}</textarea><div class="field-help">由来源内容生成；小程序或解析失败时为空，由发布人补录，保存前均可修改。</div></div><div class="field"><label><span class="required">*</span> 分类标签（AI推荐1—3项，可调整）</label><div class="chips">${state.selectedTags.map((c) => `<span class="chip">${c}</span>`).join("")}</div><div class="tag-picker">${categories.map((c) => `<button class="tag-option ${state.selectedTags.includes(c) ? "active" : ""}" onclick="toggleTag('${c}')">${c}</button>`).join("")}</div><div class="field-help">只能从统一20项分类字典中选择，最多3项。</div></div><div class="field"><label><span class="required">*</span> 宣传图片</label><div class="field-rule">${imageRule}</div>${promoField}</div><div class="field"><label>相关附件</label>${attachmentField}</div>`;
+      }
+      function form() {
+        const t = state.selected;
+        const needsManual =
+          t.value === "mini_program_link" ||
+          (t.value === "external_web" && state.webResult === "blocked");
+        return `<div class="publish-context">${t.label}<span>${t.desc}</span></div><div class="form-card"><div class="form-title">${t.value === "basic_info" ? "描述你的项目" : "提供并解析来源"}</div>${sourceForm(t)}</div>${state.parsed ? `<div class="form-card"><div class="form-title">解析结果｜请确认并调整</div>${needsManual ? `<div class="hint">来源未提供可用的项目名称、简介和图片，以下字段保持为空，请人工补齐后保存。</div>` : `<div class="success-box">✓ 智能解析已完成。保存前请确认所有必填信息。</div>`}${editableInfo(t)}</div>` : `<div class="flow-note"><span>完成来源录入后，将在这里展示可编辑的所属企业、项目名称、简介、宣传图片、附件和分类标签。</span></div>`}<div class="sticky-action"><button class="btn" onclick="go('types')">上一步</button><button class="btn primary" ${state.parsed ? "" : "disabled"} onclick="saveProject()">保存为未上架</button></div>`;
+      }
+      function startAuthorization() {
+        state.authStage = "qr";
+        render();
+      }
+      function scanAuthorization() {
+        if (state.authStage !== "qr") return;
+        state.authStage = "scanning";
+        render();
+        setTimeout(() => {
+          state.authStage = "success";
+          render();
+          setTimeout(() => {
+            state.authorized = true;
+            state.authStage = "done";
+            state.parsed = true;
+            state.selectedTags = [...state.selected.cats];
+            toast("授权成功，已读取公众号基础信息并生成项目字段");
+            render();
+          }, 900);
+        }, 850);
+      }
+      function authorize() {
+        state.authorized = true;
+        state.authStage = "done";
+        state.parsed = true;
+        state.selectedTags = [...state.selected.cats];
+        render();
+      }
+      function toggleMiniPermission() {
+        state.miniNoPermission = !state.miniNoPermission;
+        render();
+      }
+      function updateMiniLink(value) {
+        state.miniLink = value.trim();
+        state.miniValidation = "idle";
+        state.parsed = false;
+      }
+      function fillMiniExample(kind) {
+        state.miniLink =
+          kind === "valid"
+            ? "https://wxaurl.cn/8YxJpQ2Demo"
+            : kind === "share"
+              ? "#小程序://财税一键通/办理页/AbCdE123"
+              : "pages/service/index?id=1024";
+        state.miniValidation = "idle";
+        state.miniValidationMessage = "";
+        state.parsed = false;
+        render();
+      }
+      function confirmMiniLink(checked) {
+        state.miniConfirmed = checked;
+        if (!checked) state.parsed = false;
+      }
+      function validateMiniLink() {
+        const link = state.miniLink.trim();
+        state.parsed = false;
+        if (link.startsWith("#小程序://")) {
+          state.miniValidation = "error";
+          state.miniValidationMessage =
+            "这是微信客户端内的分享短链，无法确认长期有效。请从目标小程序的微信公众平台后台生成 URL Link。";
+        } else if (/^pages\//i.test(link)) {
+          state.miniValidation = "error";
+          state.miniValidationMessage =
+            "这是页面路径，不是完整链接。请让小程序管理员生成 https://wxaurl.cn/ 开头的 URL Link。";
+        } else if (!/^https:\/\/wxaurl\.cn\/[A-Za-z0-9_-]+/.test(link)) {
+          state.miniValidation = "error";
+          state.miniValidationMessage =
+            "未识别为微信官方 URL Link，请检查是否完整粘贴。";
+        } else if (!state.miniConfirmed) {
+          state.miniValidation = "error";
+          state.miniValidationMessage =
+            "格式正确，但还需勾选确认该链接由管理员设置为长期／永久有效。";
+        } else {
+          state.miniValidation = "success";
+          state.miniValidationMessage =
+            "链接格式正确并已通过模拟打开测试；已记录长期有效确认。";
+          state.parsed = true;
+          state.selectedTags = [];
+        }
+        render();
+      }
+      function parseWeb(result) {
+        state.webResult = result;
+        state.parsed = true;
+        state.selectedTags =
+          result === "success" ? [...state.selected.cats] : [];
+        toast(
+          result === "success"
+            ? "网页信息解析成功"
+            : "模拟反爬失败，已进入人工补录",
+        );
+        render();
+      }
+      function selectPromoImage(source) {
+        state.promoImage = source;
+        toast(
+          source === "upload"
+            ? "已挂接示例宣传图片"
+            : "已选择来源候选图作为宣传图片",
+        );
+        render();
+      }
+      function clearPromoImage() {
+        state.promoImage = "";
+        toast("已移除宣传图片");
+        render();
+      }
+      function addResultAttachment() {
+        state.attachmentAdded = true;
+        toast("已挂接示例附件：项目服务实施方案.pdf");
+        render();
+      }
+      function removeResultAttachment() {
+        state.attachmentAdded = false;
+        toast("已移除相关附件");
+        render();
+      }
+      function addMaterial() {
+        state.material = true;
+        toast("已上传 DOCX 项目材料，解析后将自动挂接到相关附件");
+        render();
+      }
+      function removeMaterial() {
+        state.material = false;
+        toast("已移除文件");
+        render();
+      }
+      function seedBasicText() {
+        if (state.basicText) return;
+        state.basicText =
+          "本项目面向中小企业提供数字化转型诊断与实施服务，由专业顾问梳理经营管理现状、核心业务流程和信息系统基础，结合企业规模、行业特点及发展目标，形成分阶段转型路线与实施计划。";
+        const input = document.querySelector("#basicTextarea");
+        if (input) input.value = state.basicText;
+        toast("已填入文字输入示例");
+      }
+      function updateBasicText(value) {
+        state.basicText = value;
+      }
+      function voiceInput() {
+        state.voiceRecording = !state.voiceRecording;
+        if (!state.voiceRecording) {
+          const voiceText =
+            "服务范围同时覆盖产品选型、数据治理、项目实施、人员培训和持续运营辅导，帮助企业控制建设风险，提升管理协同和经营决策效率。";
+          state.basicText = state.basicText
+            ? `${state.basicText}\n${voiceText}`
+            : voiceText;
+          toast("语音已转成文字并加入输入框");
+        } else toast("正在听，请开始描述项目…");
+        render();
+      }
+      function parseBasic() {
+        if (!state.basicText.trim() && !state.material)
+          return toast("请先输入文字、完成语音或上传文件");
+        finishParse(
+          state.material
+            ? "综合解析完成，DOCX 已自动挂接到相关附件"
+            : "文字与语音内容已综合解析",
+        );
+      }
+      function finishParse(msg) {
+        state.parsed = true;
+        state.selectedTags = [...state.selected.cats];
+        toast(msg);
+        render();
+      }
+      function toggleTag(c) {
+        const i = state.selectedTags.indexOf(c);
+        if (i >= 0) state.selectedTags.splice(i, 1);
+        else if (state.selectedTags.length < 3) state.selectedTags.push(c);
+        else return toast("分类标签最多选择3项");
+        render();
+      }
+      function detail(t) {
+        let special = "";
+        if (t.value === "official_account")
+          special = `<div class="detail-block"><h3>公众号信息</h3><div class="source-box"><span class="source-logo">西企</span><div><b>西城区企业服务</b><div class="small">服务号｜已认证｜微信号 xicheng_qifu</div></div></div><div class="hint">具体服务与最新内容请点击下方按钮进入公众号主页查看。</div></div>`;
+        if (t.value === "mini_program_link")
+          special = `<div class="detail-block"><h3>小程序体验入口</h3><div class="source-box"><span class="source-logo">小</span><div><b>中小企业数字化财税协同服务平台</b><div class="small">长期链接已确认，入口已通过打开测试</div></div></div></div>`;
+        if (t.value === "external_web")
+          special = `<div class="detail-block"><h3>项目网站</h3><div class="source-box"><span class="source-logo">W</span><div><b>www.xichengqifu.cn</b><div class="small">当前域名未配置为业务域名</div></div></div><div class="hint">点击后复制网址，请前往浏览器打开。</div></div>`;
+        if (t.value === "basic_info")
+          special = `<div class="detail-block"><h3>项目相关附件</h3><div class="source-box"><span class="source-logo">PDF</span><div><b>项目服务实施方案.pdf</b><div class="small">2.3MB　点击下载</div></div></div></div>`;
+        const publisher = t.value === "official_account"
+          ? "西城区企业服务"
+          : "北京深蓝智联科技有限公司";
+        const contact = t.value === "official_account"
+          ? "微信公众号｜已认证"
+          : "张建国｜138****3876";
+        const ctaId = t.displayId || t.value;
+        return `<div class="detail-cover"><span class="cover-badge">${t.label}</span><h2>${t.name}</h2></div><div class="detail-meta"><div class="meta-row"><span class="meta-dot">▦</span>${publisher}</div><div class="meta-row"><span class="meta-dot">♙</span>${contact}</div></div><div class="detail-block"><h3>项目简介</h3><p>${t.intro}</p><div class="chips" style="margin-top:10px">${t.cats.map((c) => `<span class="chip">${c}</span>`).join("")}</div></div>${special}<div class="sticky-action"><button class="btn primary" onclick="doCta('${ctaId}')">${t.cta}</button></div>`;
+      }
+      function manage() {
+        const all = state.role === "federation";
+        return `<div class="search">⌕　搜索项目名称</div><div class="state-tabs"><button class="active">全部</button><button>未上架</button><button>已上架</button></div>${types
+          .slice(0, all ? 4 : 3)
+          .map((t, i) => {
+            const on = i % 2 === 0;
+            return `<article class="list-card"><div class="list-top"><div class="list-cover" style="width:92px;height:70px;filter:hue-rotate(${i * 25}deg)"></div><div class="list-info"><h4>${t.name}</h4><span class="status-chip ${on ? "" : "off"}">${on ? "已上架" : "未上架"}</span><p>${t.label}</p></div></div><div class="list-bottom"><span class="list-company">${t.cats[0]}</span><div class="manage-actions">${on ? `<button class="btn danger" onclick="toast('项目已下架，可继续编辑、上架或删除')">下架</button>` : `<button class="btn" onclick="editProject('${t.value}')">编辑</button><button class="btn primary" onclick="toast('项目已上架；现仅可下架')">上架</button><button class="btn danger" onclick="toast('已删除未上架项目')">删除</button>`}</div></div></article>`;
+          })
+          .join("")}`;
+      }
+      function adminShell(content, create = false) {
+        return `<div class="admin-top"><b>西城工商联管理平台</b><span>内部管理员　⌄</span></div><div class="admin-body"><nav class="admin-nav"><div>首页</div><div class="active">项目管理</div><div>用户管理</div><div>角色管理</div><div>系统设置</div></nav><section class="admin-main ${create ? "create" : ""}">${content}</section></div>`;
+      }
+      function adminList() {
+        return adminShell(
+          `<div class="admin-title"><div><h2>项目管理</h2><span class="small">查看并管理会员发布的全部项目</span></div><button class="btn primary" onclick="adminGo('types')">＋ 新建项目</button></div><div class="admin-filter"><input class="admin-input" placeholder="搜索项目名称"><select class="admin-input"><option>全部项目类型</option>${types.map((t) => `<option value="${t.value}">${t.label}</option>`).join("")}</select><select class="admin-input"><option>全部分类</option>${categories.map((c) => `<option>${c}</option>`).join("")}</select><select class="admin-input"><option>全部状态</option><option>未上架</option><option>已上架</option></select><button class="btn primary" onclick="toast('已按条件筛选')">查询</button></div><table class="admin-table"><thead><tr><th>项目名称</th><th>发布企业</th><th>项目类型</th><th>分类标签</th><th>状态</th><th>操作</th></tr></thead><tbody>${types
+            .map((t, i) => {
+              const on = i % 2 === 0;
+              return `<tr><td><b>${t.name}</b><br><span class="small">${t.value}</span></td><td>北京深蓝智联科技有限公司</td><td>${t.label}</td><td>${t.cats.join("、")}</td><td><span class="status-chip ${on ? "" : "off"}">${on ? "已上架" : "未上架"}</span></td><td class="table-actions">${on ? `<button onclick="toast('项目已下架，可继续编辑或删除')">下架</button>` : `<button onclick="toast('打开项目详情')">查看</button><button onclick="adminEdit('${t.value}')">编辑</button><button onclick="toast('项目已上架；现仅可下架')">上架</button><button class="delete" onclick="toast('已删除未上架项目')">删除</button>`}</td></tr>`;
+            })
+            .join(
+              "",
+            )}</tbody></table><div class="desktop-note">统一状态规则：未上架可编辑、上架、删除；已上架只允许下架。项目类型与20项业务分类是两套独立字典。</div>`,
+        );
+      }
+      function adminTypes() {
+        return adminShell(
+          `<div class="admin-breadcrumb"><button onclick="adminGo('list')">项目管理</button>　/　新建项目</div><div class="admin-title"><div><h2>选择项目类型</h2><span class="small">类型决定来源录入方式；分类由解析内容后从20项字典中生成。</span></div></div><div class="admin-type-grid">${types.map((t) => `<button class="admin-type-card" onclick="adminSelectType('${t.value}')"><b>${t.choice}</b><span>${t.desc}</span><div class="small" style="margin-top:8px">${t.value}</div></button>`).join("")}</div><button class="btn" onclick="adminGo('list')">取消</button>`,
+          true,
+        );
+      }
+      function adminSource(t) {
+        return `<div class="admin-source"><b>提供项目来源</b><p class="small">后台与会员端使用相同的录入、解析、人工确认和状态规则。</p>${sourceForm(t, true)}</div>`;
+      }
+      function adminForm() {
+        const t = state.selected;
+        const needsManual =
+          t.value === "mini_program_link" ||
+          (t.value === "external_web" && state.webResult === "blocked");
+        return adminShell(
+          `<div class="admin-breadcrumb"><button onclick="adminGo('list')">项目管理</button>　/　<button onclick="adminGo('types')">选择项目类型</button>　/　${t.label}</div><div class="admin-title"><div><h2>新建项目｜${t.label}</h2><span class="small">${t.value}</span></div></div><div class="admin-form-grid"><div class="admin-panel wide">${adminSource(t)}</div>${state.parsed ? `<div class="admin-panel wide"><h3>2. 确认并调整解析结果</h3>${needsManual ? `<div class="desktop-note">来源未取得有效项目信息，请工作人员人工补齐空字段。</div>` : `<div class="success-box">✓ 解析完成。请人工确认后保存。</div>`}${editableInfo(t, true)}<div style="display:flex;justify-content:flex-end;gap:10px"><button class="btn" onclick="adminGo('types')">上一步</button><button class="btn primary" onclick="adminSave()">保存为未上架</button></div></div>` : `<div class="desktop-note wide">完成来源录入和解析后，才展示可编辑的所属企业、项目名称、简介、宣传图片、附件及20项分类标签。</div>`}</div>`,
+          true,
+        );
+      }
+      function admin() {
+        return state.adminPage === "types"
+          ? adminTypes()
+          : state.adminPage === "form"
+            ? adminForm()
+            : adminList();
+      }
+      function adminGo(p) {
+        state.adminPage = p;
+        if (p === "types") resetSource();
+        render();
+      }
+      function adminSelectType(v) {
+        state.selected = types.find((t) => t.value === v);
+        resetSource();
+        state.adminPage = "form";
+        render();
+      }
+      function adminEdit(v) {
+        state.selected = types.find((t) => t.value === v);
+        state.selectedTags = [...state.selected.cats];
+        state.parsed = true;
+        state.authorized = true;
+        state.adminPage = "form";
+        render();
+      }
+      function adminAuthorize() {
+        state.authorized = true;
+        toast("授权二维码已确认");
+        render();
+      }
+      function finishAdminParse() {
+        state.parsed = true;
+        state.selectedTags = [...state.selected.cats];
+        toast("解析完成，请确认项目资料");
+        render();
+      }
+      function adminSave() {
+        toast("项目已保存为未上架");
+        setTimeout(() => {
+          state.adminPage = "list";
+          render();
+        }, 700);
+      }
+      function review() {
+        const t = state.selected;
+        const roleName = {
+          publisher: "会员｜有发布权限",
+          viewer: "会员｜无发布权限",
+          federation: "工商联",
+          admin: "公司内部PC后台",
+        }[state.role];
+        let typeNote = {
+          official_account:
+            "点击发起授权后展示微信授权二维码；点击二维码依次演示扫码中与授权成功。授权后仅读取公众号名称、微信号、账号类型、认证状态和功能介绍等基础信息，并直接生成可修改的项目字段，不读取文章。",
+          mini_program_link:
+            "小程序主页与指定页面合并：均要求目标管理员从微信公众平台生成长期 URL Link。客户端转发链接和纯页面路径均提示错误。",
+          external_web:
+            "网页存在解析成功与反爬失败两种结果；失败不阻断流程，转为人工补录。",
+          basic_info:
+            "项目介绍初始为空；可输入文字、完成语音输入或上传 DOC/DOCX 项目材料后统一解析。解析使用的 DOC/DOCX 会自动挂接到相关附件，附件区仍可另行添加 PDF 等文件。",
+        }[t.value];
+        return `<div class="review-card"><h3>当前原型状态</h3><div class="review-row"><b>角色</b><span>${roleName}</span></div><div class="review-row"><b>页面</b><span>${state.page}</span></div><div class="review-row"><b>录入方式</b><span>${t.label}</span></div><div class="review-row"><b>字典值</b><span class="value">${t.value}</span></div></div><div class="review-card"><h3>本方式方案说明</h3><p>${typeNote}</p><p>预设按钮和示例数据仅用于演示交互，不代表正式数据。</p></div><div class="review-card"><h3>结果字段来源规则</h3><ul><li>公众号只读取账号基础信息，不读取或展示文章；宣传图片由用户自主上传</li><li>网页 OG 图只作为宣传图片候选；小程序、纯文字、语音和 DOC/DOCX 不自动产生宣传图片</li><li>项目介绍解析使用的 DOC/DOCX 自动挂接到相关附件；相关附件还可另行添加 PDF 等文件</li><li>其他来源默认不产生附件，由用户自主添加</li><li>项目名称与简介解析后均可修改；演示简介按约150字撰写</li></ul></div><div class="review-card"><h3>统一发布链路</h3><ul><li>先授权或提供来源内容</li><li>系统解析并从20项分类中推荐1—3项</li><li>用户确认、修改全部必要字段</li><li>会员所属企业自动读取且不可改</li><li>保存后统一为未上架</li></ul></div><div class="review-card"><h3>小程序跳转技术说明</h3><p>URL Link用于来源录入与测试。详情页“立即体验”最终还需技术确认如何取得并保存目标AppID与页面路径，以满足小程序内跳转。</p></div>`;
+      }
+      function render() {
+        const isAdmin = state.role === "admin";
+        document
+          .querySelector("#phoneWrap")
+          .classList.toggle("hidden", isAdmin);
+        document.querySelector("#desktop").classList.toggle("active", isAdmin);
+        document.querySelector("#review").style.display = isAdmin
+          ? "none"
+          : "block";
+        if (isAdmin) {
+          document.querySelector("#desktop").innerHTML = admin();
+          document.querySelector("#stageTitle").textContent =
+            `公司内部PC后台｜${state.adminPage === "list" ? "项目管理" : "新建项目"}`;
+          return;
+        }
+        const titles = {
+          home: "小联帮你链",
+          list: "找项目",
+          types: "发布项目",
+          form: "发布项目",
+          detail: "项目详情",
+          manage: state.role === "federation" ? "项目管理" : "我的项目",
+        };
+        titleEl.textContent = titles[state.page] || "小联帮你链";
+        document.querySelector("#stageTitle").textContent =
+          `${{ publisher: "会员端", viewer: "会员端（无发布权限）", federation: "工商联端" }[state.role]}｜${titles[state.page]}`;
+        pageEl.innerHTML =
+          state.page === "home"
+            ? home()
+            : state.page === "list"
+              ? list()
+              : state.page === "types"
+                ? typeSelect()
+                : state.page === "form"
+                  ? form()
+                  : state.page === "detail"
+                    ? detail(state.selected)
+                    : manage();
+        document.querySelector("#review").innerHTML = review();
+      }
+      function editProject(v) {
+        state.selected = types.find((t) => t.value === v);
+        state.parsed = true;
+        state.authorized = true;
+        state.selectedTags = [...state.selected.cats];
+        go("form");
+      }
+      function openDetail(id) {
+        state.selected =
+          projectSamples.find((t) => t.displayId === id) ||
+          types.find((t) => t.value === id);
+        go("detail");
+      }
+      function saveProject() {
+        if (!state.parsed) return toast("请先完成来源解析");
+        toast("已保存为未上架");
+        setTimeout(() => go("manage"), 700);
+      }
+      function doCta(v) {
+        const t = types.find((x) => x.value === v);
+        const msgs = {
+          official_account: "正在进入公众号主页：西城区企业服务",
+          mini_program_link: "微信将确认是否打开目标小程序页面",
+          external_web: "网址已复制，请前往浏览器打开",
+          basic_info: "即将拨打：138****3876",
+        };
+        toast(msgs[v] || t?.cta || "打开项目");
+      }
+      document.querySelector(".controls .sub").textContent =
+        "高保真交互原型 v0.7";
+      document.querySelector(".controls .rule").textContent =
+        "v0.7交互提示：公众号授权后只读取账号基础信息并直接生成项目字段，不再拉取或展示文章；项目介绍的解析材料仅支持 DOC/DOCX，解析后自动挂接到相关附件。";
+      document.querySelectorAll(".role").forEach(
+        (b) =>
+          (b.onclick = () => {
+            document
+              .querySelectorAll(".role")
+              .forEach((x) => x.classList.remove("active"));
+            b.classList.add("active");
+            state.role = b.dataset.role;
+            state.page = "home";
+            state.adminPage = "list";
+            state.stack = [];
+            state.category = "全部";
+            resetSource();
+            render();
+          }),
+      );
+      document.querySelectorAll(".page-jump").forEach(
+        (b) =>
+          (b.onclick = () => {
+            if (state.role === "admin") return;
+            go(b.dataset.page);
+          }),
+      );
+      resetSource();
+      render();
+    </script>
+  </body>
+</html>
